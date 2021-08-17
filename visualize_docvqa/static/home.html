@@ -100,18 +100,54 @@
         }
       }
 
+      @media print {
+        .pagebreak {
+            clear: both;
+            page-break-after: always;
+        }
+      }
+      
       .center {
         display: block;
         margin-left: auto;
         margin-right: auto;
         width: 80%;
       }
+
+      .center_home {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 60%;
+      }
+
+      * {box-sizing: border-box;}
+
+      .img-zoom-container {
+        position: relative;
+      }
+
+      .img-zoom-lens {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        /*set the size of the lens:*/
+        width: 40px;
+        height: 40px;
+      }
+
+      .img-zoom-result {
+        border: 1px solid #d4d4d4;
+        /*set the size of the result div:*/
+        width: 300px;
+        height: 300px;
+      }
+
     </style>
   </head>
   <body>
     <header>
       <div class="navbar">
-        <a href="/home.html">Home</a>
+        <a href="/">Home</a>
         <div class="subnav">
           <button class="subnavbtn">
             Visualization <i class="fa fa-caret-down"></i>
@@ -120,6 +156,12 @@
             <a href="/vis/train">Train</a>
             <a href="/vis/val">Validation</a>
             <a href="/vis/test">Test</a>
+            <a href="/vis/train_ocrline">Train OCR line</a>
+            <a href="/vis/val_ocrline">Validation OCR line</a>
+            <a href="/vis/test_ocrline">Test OCR line</a>
+            <a href="/vis/train_ocrword">Train OCR word</a>
+            <a href="/vis/val_ocrword">Validation OCR word</a>
+            <a href="/vis/test_ocrword">Test OCR word</a>
           </div>
         </div>
         <a href="/demo.html">Evaluation</a>
@@ -133,7 +175,7 @@
       <h1 style="text-align: center; color: blue; margin: 50px">
         Document Visual Question Answering
       </h1>
-      <img src="assets/home_image.svg" alt="Home image" class="center" width="60%" />
+      <img src="assets/home_image.svg" alt="Home image" class="center_home"/>
     </div>
     {% endblock %}
     {% block content %}

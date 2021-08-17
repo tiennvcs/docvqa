@@ -8,15 +8,14 @@
   <body>
     {%block home %}
       <h1 style="text-align: center; color:blue">DocVQA Visualization</h1>
+      <h1 style="text-align: center; color:green">{{name}} dataset</h1>
     {% endblock %}
    
     {% block content %}
     {% for image_path, item in items.items() %}
     <div class="row">
       <div class="column">
-        <img width="600px" class="center"
-          src="{{ url_for('static', filename=folder + '/documents/' + image_path) }}"
-        />
+        <img class="center" loading='lazy' src="{{ url_for('static', filename= folder + '/' + image_path) }}"/>
       </div>
       <div class="column">
         <div>
@@ -24,7 +23,7 @@
         <h3>Image information</h3>
         <ul>
           <li><b>Image name: </b> {{image_path}}</li>
-          <li><b>Doc ID: </b> {{item.docID}}</li>
+          <li><b>Doc ID: </b> {{item.docId}}</li>
           <li><b>UCSF document ID: </b> {{item.ucsf_document_id}}</li>
           <li><b>UCSF document page no: </b> {{item.ucsf_document_page_no}}</li>
         </ul>
@@ -36,7 +35,7 @@
             <ul>
               <li>
                 <div>
-                  <b>ID-Question:</b> ({{question.questionID}}) {{question.question}}
+                  <b>ID-Question:</b> ({{question.questionId}}) {{question.question}}
                   <div>
                   <ul>
                   {%for answer in question.answers%}
@@ -50,9 +49,11 @@
             {% endfor %}
         </div>
       </div>
+    <hr style="background-color: red; height: 3px; width:80%">
     </div>
-
     {% endfor %}
     {% endblock %}
+
   </body>
+  
 </html>
