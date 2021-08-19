@@ -1,18 +1,20 @@
 URL2NAME = {
     'train': 'Training',
     'val': 'Validation',
+    'smallval': 'Small Validation',
     'test': 'Testing',
-    'val_ocrline': 'Training',
-    'train_ocrline': 'Validation',
+    'train_ocrline': 'Training',
+    'val_ocrline': 'Validation',
     'test_ocrline': 'Testing',
-    'val_ocrword': 'Training',
-    'train_ocrword': 'Validation',
+    'train_ocrword': 'Training',
+    'val_ocrword': 'Validation',
     'test_ocrword': 'Testing',
 }
 
 URL2FULL = {
     'train': 'train/documents',
     'val': 'val/documents',
+    'smallval': 'smallval/documents',
     'test': 'test/documents',
     'train_ocrline': 'train/ocr_documents/line',
     'val_ocrline': 'val/ocr_documents/line',

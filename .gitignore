@@ -1,2 +1,4 @@
 visualize_docvqa/static/val
+visualize_docvqa/static/train
+visualize_docvqa/static/test
 *__pychache__*

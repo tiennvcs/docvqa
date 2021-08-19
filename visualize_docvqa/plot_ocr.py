@@ -53,5 +53,5 @@ def draw_entire(base_dir):
 
 
 if __name__ == '__main__':
-    base_dir = 'visualize_docvqa/static/val/'
+    base_dir = 'visualize_docvqa/static/test/'
     draw_entire(base_dir=base_dir)

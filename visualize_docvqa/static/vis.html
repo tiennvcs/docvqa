@@ -12,10 +12,11 @@
     {% endblock %}
    
     {% block content %}
+
     {% for image_path, item in items.items() %}
     <div class="row">
       <div class="column">
-        <img class="center" loading='lazy' src="{{ url_for('static', filename= folder + '/' + image_path) }}"/>
+        <img class="center" loading='lazy' src="{{ url_for('static', filename= 'visual_docvqa/' + folder + '/' + image_path) }}"/>
       </div>
       <div class="column">
         <div>
