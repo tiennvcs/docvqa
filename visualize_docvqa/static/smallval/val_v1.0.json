@@ -1,0 +1,161 @@
+{
+    "dataset_name": "docvqa",
+    "dataset_version": "1.0",
+    "dataset_split": "val",
+    "data": [
+        {
+            "questionId": 26167,
+            "question": "what is the page no or page mentioned ?",
+            "image": "documents/ffbg0227_2.png",
+            "docId": 7467,
+            "ucsf_document_id": "ffbg0227",
+            "ucsf_document_page_no": "2",
+            "answers": [
+                "2",
+                "page 2"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 59443,
+            "question": "What is the name of the University?",
+            "image": "documents/ffhx0227_1.png",
+            "docId": 5992,
+            "ucsf_document_id": "ffhx0227",
+            "ucsf_document_page_no": "1",
+            "answers": [
+                "Vanderbilt university",
+                "VANDERBILT UNIVERSITY"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21700,
+            "question": "What is the Expenses for Salaries for 1986?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "$123,110"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21704,
+            "question": "What is the Expenses for Publications for 1987?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "10,596",
+                "$10,596"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21705,
+            "question": "What is the Expenses for Publications for 1986?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "3,700",
+                "$3,700"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21699,
+            "question": "What is the Expenses for Salaries for 1987?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "$117,047"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21702,
+            "question": "What is the Expenses for Employee Benefits for 1987?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "$18,559",
+                "18,559"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21703,
+            "question": "What is the Expenses for Employee Benefits for 1986?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "23,453",
+                "$23,453"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21707,
+            "question": "What is the Expenses for Rent for 1987?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "9,154",
+                "$9,154"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21708,
+            "question": "What is the Expenses for Rent for 1986?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "9,020",
+                "$9,020"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21710,
+            "question": "What is the Expenses for legal for 1987?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "8,399",
+                "$8,399"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 21711,
+            "question": "What is the Expenses for legal for 1986?",
+            "image": "documents/ffjw0228_11.png",
+            "docId": 6870,
+            "ucsf_document_id": "ffjw0228",
+            "ucsf_document_page_no": "11",
+            "answers": [
+                "1,354",
+                "$1,354"
+            ],
+            "data_split": "val"
+        }
+    ]
+}

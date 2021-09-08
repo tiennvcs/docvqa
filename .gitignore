@@ -1,0 +1,7 @@
+visualize_docvqa/static/val
+visualize_docvqa/static/train
+visualize_docvqa/static/test
+!**/__pycache__/
+libs/ocr/sample
+libs/ocr/output
+libs/layoutlmv2/runs/train

@@ -1,0 +1,60 @@
+{% extends 'home.html' %}
+<html>
+  <head>
+    <title>DocVQA Vis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    {%block home %}
+      <h1 style="text-align: center; color:blue">DocVQA Visualization</h1>
+      <h1 style="text-align: center; color:green">{{name}} dataset</h1>
+    {% endblock %}
+   
+    {% block content %}
+
+    {% for image_path, item in items.items() %}
+    <div class="row">
+      <div class="column">
+        <img class="center" loading='lazy' src="{{ url_for('static', filename= 'visual_docvqa/' + folder + '/' + image_path) }}"/>
+      </div>
+      <div class="column">
+        <div>
+        <!-- Start image information-->
+        <h3>Image information</h3>
+        <ul>
+          <li><b>Image name: </b> {{image_path}}</li>
+          <li><b>Doc ID: </b> {{item.docId}}</li>
+          <li><b>UCSF document ID: </b> {{item.ucsf_document_id}}</li>
+          <li><b>UCSF document page no: </b> {{item.ucsf_document_page_no}}</li>
+        </ul>
+        </div>
+        <div>
+        <!-- Start question information-->
+          <h3> Questions and Answers</h3>
+            {%for question in item.questions %}
+            <ul>
+              <li>
+                <div>
+                  <b>ID-Question:</b> ({{question.questionId}}) {{question.question}}
+                  <div>
+                  <ul>
+                  {%for answer in question.answers%}
+                    <li>{{answer}}</li>
+                  {% endfor %}
+                  <ul>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            {% endfor %}
+        </div>
+      </div>
+    <hr style="background-color: red; height: 3px; width:80%">
+    </div>
+    {% endfor %}
+    {% endblock %}
+
+  </body>
+  
+</html>
