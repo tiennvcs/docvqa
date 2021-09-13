@@ -10,11 +10,14 @@
 
 ```bash
 $ git clone https://github.com/tiennvcs/docvqa
-
+```
+```bash
 $ cd docvqa/libs/layoutlmv2/
-
+```
+```bash
 $ chmod 777 ./install.sh
-
+```
+```bash
 $ ./install.sh
 ```
 
