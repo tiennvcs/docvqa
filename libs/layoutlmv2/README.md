@@ -1,4 +1,4 @@
-# LayoutLMv2 implementation for Document visual question aswering
+# LayoutLMv2 implementation for Document visual question answering
 
 ## Quick start
 
