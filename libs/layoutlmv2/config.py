@@ -2,10 +2,13 @@ import os
 from datasets import Features, Sequence, Value, Array2D, Array3D
 from torch.optim import AdamW
 
-ROOT_DATA  = '/mlcv/Databases/DocVQA_2020-21/task_1/'
+ROOT_DATA  = '/content/SingleDocVQA/'
 TRAIN_DATA = os.path.join(ROOT_DATA, 'train/')
 VAL_DATA   = os.path.join(ROOT_DATA, 'val/')
 MODEL_CHECKPOINT = 'microsoft/layoutlmv2-base-uncased'
+
+
+DEBUG = 50
 
 
 features = Features({
@@ -24,11 +27,11 @@ TRAINING_CONFIGs = {
                             'optimizer': AdamW,
                             'lr': 1e-3,
                             'epochs': 50,
-                            'batch_size': 4,
+                            'batch_size': 1,
                             'momentum': 0.9,
                             'eval_freq': 1,
                             'save_freq': 10,
-                            'num_workers': 4,
+                            'num_workers': 2,
                     },
     
 }
