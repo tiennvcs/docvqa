@@ -1,6 +1,6 @@
 """
 	Usages:
-		python run_layoutlmv2.py --train_config default
+		python train.py --train_config default --work_dir runs/train/layoutlmv2-base-uncased_50e/
 
 """
 
@@ -134,7 +134,7 @@ def main(args):
     model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT)
 
 	# Fine-tuning model
-    os.environ['CUDA_VISIBLE_DEVICES'] = 2
+    # os.environ['CUDA_VISIBLE_DEVICES'] = 2
     trained_model = train(model=model, train_data=train_dataloader, val_data=val_dataloader,
 						epochs=epochs, optimizer=optimizer, lr=lr, loss_log=loss_log, save_freq=save_freq,
                         work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq)
