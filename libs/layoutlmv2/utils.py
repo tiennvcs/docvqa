@@ -7,7 +7,7 @@ from PIL import Image
 from datasets import Dataset
 from transformers import AutoTokenizer
 from transformers import LayoutLMv2FeatureExtractor
-from config import MODEL_CHECKPOINT, TRAIN_DATA, VAL_DATA, features
+from config import MODEL_CHECKPOINT, TRAIN_DATA, VAL_DATA, features, DEBUG
 
 
 def subfinder(words_list, answer_list):
@@ -141,13 +141,13 @@ def load_and_process_data(data_dir, batch_size, num_workers):
     with open(label_file, 'r') as f:
         data = json.load(f)
     df = pd.DataFrame(data['data'])
-    dataset = Dataset.from_pandas(df.iloc[:])
+    dataset = Dataset.from_pandas(df.iloc[:DEBUG])
     if 'train' in data_dir:
         dataset_with_ocr = dataset.map(get_ocr_words_and_boxes_train, batched=True, batch_size=batch_size)
     elif 'val' in data_dir:
         dataset_with_ocr = dataset.map(get_ocr_words_and_boxes_val, batched=True, batch_size=batch_size)
     encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
-										remove_columns=dataset_with_ocr.column_names, features=features)
+					remove_columns=dataset_with_ocr.column_names, features=features)
     encoded_dataset.set_format(type="torch")
     dataloader = torch.utils.data.DataLoader(encoded_dataset, shuffle=True,
                                             batch_size=batch_size, num_workers=num_workers)
