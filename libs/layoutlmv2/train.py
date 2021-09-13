@@ -12,7 +12,7 @@ from config import TRAIN_DATA, VAL_DATA, MODEL_CHECKPOINT, TRAINING_CONFIGs
 import numpy as np
 import torch
 import os
-
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 def train(model, train_data, val_data, 
         epochs, optimizer, lr, loss_log, save_freq,
