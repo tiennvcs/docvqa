@@ -54,7 +54,7 @@ Given an input image and a natural language question, model need to output the n
 $ python inference.py --input input.json --model_type microsoft/layoutlmv2-base-uncased --weights path/to/fine-tuned-model/
 ```
 
-*Example:**
+*Example:*
 ```bash
 $ python inference.py --input example_input.json --model_type microsoft/layoutlmv2-base-uncased --weights path/to/fine-tuned-model/
 ```
