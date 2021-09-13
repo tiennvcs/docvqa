@@ -54,14 +54,15 @@ Given an input image and a natural language question, model need to output the n
 1. Create a json file for query. It is a list contain a lot of dictionaries as bellow.
 ```python
 [
-  {
-  	"question": "Which social platform has heavy female audience?", 
-	"image": "37313.jpeg",
-	"ocr": "37313.json",
-  },
-  ...
+	{
+		"question": "Which social platform has heavy female audience?", 
+		"image": "37313.jpeg",
+		"ocr": "37313.json",
+	},
+  	...
 ]
 ```
+
 3. Run the model given json query
 
 ```bash
