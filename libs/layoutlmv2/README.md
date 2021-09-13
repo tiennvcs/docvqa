@@ -23,7 +23,21 @@ $ ./install.sh
 
 ## Preparation
 *Will coming soon*
+### Extracted features
+We can found extracted feature at:
+	- DocVQA: 
+		+ Train
+		+ Val
+		+ Test
+	- InfographicVQA:
+		+ Train
+		+ Val
+		+ Test
 
+### Fine-tuned model
+	- Model 1
+	- Model 2
+	
 ## Usage
 ### Fine tuning model on DocVQA dataset
 
