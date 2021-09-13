@@ -125,6 +125,7 @@ def load_and_process_data(data_dir, batch_size, num_workers):
     with open(label_file, 'r') as f:
         data = json.load(f)
     df = pd.DataFrame(data['data'])
+    df['image'] = [os.path.join(data_dir, img_file) for img_file in df['image']]
     dataset = Dataset.from_pandas(df.iloc[:DEBUG])
     dataset_with_ocr = dataset.map(get_ocr_words_and_boxes, batched=True, batch_size=batch_size)
     encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
