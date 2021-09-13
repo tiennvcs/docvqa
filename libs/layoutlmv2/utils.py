@@ -139,11 +139,7 @@ def load_and_process_data(data_dir, batch_size, num_workers):
 def create_logger(file_path):
     log = logging.getLogger(file_path)
     log.setLevel(logging.DEBUG)
-
-    if 'loss' in file_path:
-        formatter = logging.Formatter('%(message)s')
-    else:
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     fh = logging.FileHandler(file_path, mode='w', encoding='utf-8')
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
