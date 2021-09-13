@@ -24,13 +24,46 @@ $ ./install.sh
 ## Preparation
 *Will coming soon*
 
-
-## Fine tuning model on DocVQA dataset
+## Usage
+### Fine tuning model on DocVQA dataset
 
 **Fine tuning on DocVQA**
 
 
 **Fine tuning on Infographic VQA**
+
+
+### Inference
+
+Given an input image and a natural language question, model need to output the natural language words for answering.
+
+1. Create a json file for query. It is a list contain a lot of dictionaries as bellow.
+```python
+[
+  {
+  	"question": "Which social platform has heavy female audience?", 
+	"image": "37313.jpeg",
+	"ocr": "37313.json",
+  },
+  ...
+]
+```
+3. Run the model given json query
+
+```bash
+$ python inference.py --input input.json --model_type microsoft/layoutlmv2-base-uncased --weights path/to/fine-tuned-model/
+```
+
+*Example:**
+```bash
+$ python inference.py --input example_input.json --model_type microsoft/layoutlmv2-base-uncased --weights path/to/fine-tuned-model/
+```
+
+*Output:*
+```bash
+AHIHI
+```
+
 
 ## Experiment and Results
 
