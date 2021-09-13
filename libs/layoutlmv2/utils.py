@@ -7,7 +7,7 @@ from PIL import Image
 from datasets import Dataset
 from transformers import AutoTokenizer
 from transformers import LayoutLMv2FeatureExtractor
-from config import MODEL_CHECKPOINT, TRAIN_DATA, VAL_DATA, features, DEBUG
+from config import MODEL_CHECKPOINT, features, DEBUG
 
 
 def subfinder(words_list, answer_list):
@@ -26,27 +26,11 @@ def subfinder(words_list, answer_list):
         return None, 0, 0
 
 
-def get_ocr_words_and_boxes_train(examples):
+def get_ocr_words_and_boxes(examples):
     feature_extractor = LayoutLMv2FeatureExtractor()
 
     # get a batch of document images
-    images = [Image.open(TRAIN_DATA + image_file).convert("RGB") for image_file in examples['image']]
-
-    # resize every image to 224x224 + apply tesseract to get words + normalized boxes
-    encoded_inputs = feature_extractor(images)
-
-    examples['image'] = encoded_inputs.pixel_values
-    examples['words'] = encoded_inputs.words
-    examples['boxes'] = encoded_inputs.boxes
-
-    return examples
-
-
-def get_ocr_words_and_boxes_val(examples):
-    feature_extractor = LayoutLMv2FeatureExtractor()
-
-    # get a batch of document images
-    images = [Image.open(VAL_DATA + image_file).convert("RGB") for image_file in examples['image']]
+    images = [Image.open(image_file).convert("RGB") for image_file in examples['image']]
 
     # resize every image to 224x224 + apply tesseract to get words + normalized boxes
     encoded_inputs = feature_extractor(images)
@@ -142,10 +126,7 @@ def load_and_process_data(data_dir, batch_size, num_workers):
         data = json.load(f)
     df = pd.DataFrame(data['data'])
     dataset = Dataset.from_pandas(df.iloc[:DEBUG])
-    if 'train' in data_dir:
-        dataset_with_ocr = dataset.map(get_ocr_words_and_boxes_train, batched=True, batch_size=batch_size)
-    elif 'val' in data_dir:
-        dataset_with_ocr = dataset.map(get_ocr_words_and_boxes_val, batched=True, batch_size=batch_size)
+    dataset_with_ocr = dataset.map(get_ocr_words_and_boxes, batched=True, batch_size=batch_size)
     encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
 					remove_columns=dataset_with_ocr.column_names, features=features)
     encoded_dataset.set_format(type="torch")
