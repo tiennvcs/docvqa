@@ -8,6 +8,8 @@ from datasets import Dataset
 from transformers import AutoTokenizer
 from transformers import LayoutLMv2FeatureExtractor
 from config import MODEL_CHECKPOINT, features, DEBUG
+import cv2
+feature_extractor = LayoutLMv2FeatureExtractor()
 
 
 def subfinder(words_list, answer_list):
@@ -27,10 +29,9 @@ def subfinder(words_list, answer_list):
 
 
 def get_ocr_words_and_boxes(examples):
-    feature_extractor = LayoutLMv2FeatureExtractor()
 
     # get a batch of document images
-    images = [Image.open(image_file).convert("RGB") for image_file in examples['image']]
+    images = [cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB) for image_file in examples['image']]
 
     # resize every image to 224x224 + apply tesseract to get words + normalized boxes
     encoded_inputs = feature_extractor(images)
@@ -38,6 +39,21 @@ def get_ocr_words_and_boxes(examples):
     examples['image'] = encoded_inputs.pixel_values
     examples['words'] = encoded_inputs.words
     examples['boxes'] = encoded_inputs.boxes
+
+    return examples
+
+
+def get_avail_ocr_feature(examples):
+    
+    # get a batch of document images
+    images = [cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB) for image_file in examples['image']]
+
+    # resize every image to 224x224 + apply tesseract to get words + normalized boxes
+    encoded_inputs = feature_extractor(images)
+
+    examples['image'] = encoded_inputs.pixel_values
+    examples['words'] = None
+    examples['boxes'] = None
 
     return examples
 
@@ -127,7 +143,15 @@ def load_and_process_data(data_dir, batch_size, num_workers):
     df = pd.DataFrame(data['data'])
     df['image'] = [os.path.join(data_dir, img_file) for img_file in df['image']]
     dataset = Dataset.from_pandas(df.iloc[:DEBUG])
-    dataset_with_ocr = dataset.map(get_ocr_words_and_boxes, batched=True, batch_size=batch_size)
+    
+    # Check availabel OCR file
+    ocr_dir = [subdir for subdir in os.listdir(data_dir) if "ocr" in subdir]
+    if len(ocr_dir) > 0: # Will update soon
+        df['ocr_output_file'] = [os.path.join(data_dir, ocr_file) for ocr_file in df['ocr_output_file']]
+        dataset_with_ocr = dataset.map(get_avail_ocr_feature, batched=True, batch_size=batch_size)
+    else:
+        # Extract feature by OCR
+        dataset_with_ocr = dataset.map(get_ocr_words_and_boxes, batched=True, batch_size=batch_size)
     encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
 					remove_columns=dataset_with_ocr.column_names, features=features)
     encoded_dataset.set_format(type="torch")
