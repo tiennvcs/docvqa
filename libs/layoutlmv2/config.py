@@ -8,7 +8,7 @@ VAL_DATA   = os.path.join(ROOT_DATA, 'val/')
 MODEL_CHECKPOINT = 'microsoft/layoutlmv2-base-uncased'
 
 
-DEBUG = 50
+DEBUG = 10
 
 
 features = Features({
@@ -27,7 +27,7 @@ TRAINING_CONFIGs = {
                             'optimizer': AdamW,
                             'lr': 1e-3,
                             'epochs': 50,
-                            'batch_size': 1,
+                            'batch_size': 2,
                             'momentum': 0.9,
                             'eval_freq': 1,
                             'save_freq': 10,
