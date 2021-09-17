@@ -14,7 +14,7 @@ def extract_feature_ocr(data_dir, batch_size):
     with open(label_file, 'r') as f:
         data = json.load(f)
     df = pd.DataFrame(data['data'])
-    dataset = Dataset.from_pandas(df.iloc[:DEBUG])
+    dataset = Dataset.from_pandas(df.iloc[:])
     if 'train' in data_dir:
         output_file = os.path.join(data_dir, 'train_extract_dataset_with_ocr.pk')
         dataset_with_ocr = dataset.map(get_ocr_words_and_boxes_train, batched=True, batch_size=batch_size)
@@ -33,8 +33,8 @@ if __name__ == '__main__':
     
     batch_size = 2
     
-    data_dir = '/mlcv/Databases/DocVQA_2020-21/task_1/val'
-    extract_feature_ocr(data_dir=data_dir, batch_size=batch_size)
+    #data_dir = '/mlcv/Databases/DocVQA_2020-21/task_1/val'
+    #extract_feature_ocr(data_dir=data_dir, batch_size=batch_size)
 
-    # data_dir = '/mlcv/Databases/DocVQA_2020-21/task_1/train'
-    # extract_feature_ocr(data_dir=data_dir, batch_size=batch_size)
+    data_dir = '/mlcv/Databases/DocVQA_2020-21/task_1/train'
+    extract_feature_ocr(data_dir=data_dir, batch_size=batch_size)
