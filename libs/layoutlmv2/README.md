@@ -84,6 +84,26 @@ The annotation files (`{train_v1.0/val_v1.0/test.v1.0}.json`) must have the same
 }
 ```
 
+#### OCR file
+
+All OCR file must be putted in the `ocr_results` folder. Each file must have the same structure like [`ocr_samle.json`]('./sample/ocr_sample.json').
+
+*If your dataset don't have availabel OCR files, don't worry. When running the extract feature section, the Tesseract engine will OCR the images and gather OCR information to feature file.*
+
+### Download 
+
+Here is some availabel dataset containing extracted features and also converted structure.
+
+- Dataset
+	- DocVQA dataset *(coming soon)*
+	- InfographicVQA dataset *(coming soon)*
+	- VietInfographicVQA dataset *(coming soon)*
+- Model
+        - Our model fine-tuning in 2 epoch on DocVQA dataset *(coming soon)*
+        - Our model fine-tuning in 2 epoch on InfographicVQA dataset *(coming soon)*
+        - Our model fine-tuning in 2 epoch on InfographicVQA dataset *(coming soon)*
+
+
 ### Extracted features
 
 If you want to fine-tuning pre-training model on your own dataset. You need to extract feature from its. A sample feature is define a dictionay bellow:
