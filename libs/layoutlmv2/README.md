@@ -23,6 +23,66 @@ $ ./install.sh
 
 ## Preparation
 
+### Dataset
+The source code implement handle the DocVQA dataset. If you want to running on your own dataset, it must have structure like bellow.
+```
+/Data/root/directory/
+|-- extracted_features
+|   |-- test
+|   |-- train
+|   |-- val
+|-- test
+|   |-- documents
+|   |-- ocr_results
+|   `-- test_v1.0.json
+|-- train
+|   |-- documents
+|   |-- ocr_results
+|   `-- train_v1.0.json
+|-- val
+|   |-- documents
+|   |-- ocr_results
+|   `-- val_v1.0.json
+```
+#### Annotation
+The annotation files ({train_v1.0/val_v1.0/test.v1.0}.json) must have the same and following format.
+```
+{
+    "dataset_name": "docvqa",
+    "dataset_version": "1.0",
+    "dataset_split": "val",
+    "data": [
+        {
+            "questionId": 49153,
+            "question": "What is the ‘actual’ value per 1000, during the year 1975?",
+            "image": "documents/pybv0228_81.png",
+            "docId": 14465,
+            "ucsf_document_id": "pybv0228",
+            "ucsf_document_page_no": "81",
+            "answers": [
+                "0.28"
+            ],
+            "data_split": "val"
+        },
+        {
+            "questionId": 24580,
+            "question": "What is name of university?",
+            "image": "documents/nkbl0226_1.png",
+            "docId": 7027,
+            "ucsf_document_id": "nkbl0226",
+            "ucsf_document_page_no": "1",
+            "answers": [
+                "university of california",
+                "University of California",
+                "university of california, san diego"
+            ],
+            "data_split": "val"
+        },
+	...
+    ]
+}
+```
+
 ### Extracted features
 
 If you want to fine-tuning pre-training model on your own dataset. You need to extract feature from its. A sample feature is define a dictionay bellow:
@@ -39,10 +99,15 @@ features           = Features({
                     })
 ```
 
-Run the following command to extract feature from train/val/test directory
+Run the following command to extract feature from validation dataset directory (train and test dataset will be performed similar).
 ```bash
-
+	python extract_feature.py \
+		    --input_dir /mlcv/Databases/DocVQA_2020-21/task_1/val/
+		    --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/val/
+		    --batch_size 16
 ```
+If run successfully, check the output feature file at `/mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/val`.
+
 
 ### Fine-tuned model
 	- Model 1
