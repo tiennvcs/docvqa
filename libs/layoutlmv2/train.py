@@ -1,13 +1,13 @@
 """
 	Usages:
-		CUDA_VISIIBLE_DEVICES=0 python train.py --train_config default --work_dir runs/train/layoutlmv2-base-uncased_50e/
+		CUDA_VISIBLE_DEVICES=0 python train.py --train_config default_config --work_dir runs/train/layoutlmv2-base-uncased_50e/
 
 """
 
 import argparse
 from transformers import AutoModelForQuestionAnswering
 import torch.nn as nn
-from utils import create_logger, load_feature_from_file
+from utils import create_logger, get_gpu_memory_map, load_feature_from_file
 from config import TRAIN_FEATURE_PATH, VAL_FEATURE_PATH, MODEL_CHECKPOINT, TRAINING_CONFIGs
 import numpy as np
 import torch
@@ -19,34 +19,53 @@ def train(model, train_data, val_data,
         epochs, optimizer, lr, loss_log, save_freq,
         eval_freq, work_dir, logger):
 
+
     optimizer = optimizer(model.parameters(), lr=lr)
+
+    # Measure GPU memory of model
+    GPU_usage_before = get_gpu_memory_map()
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
     
     if torch.cuda.device_count() > 1:
-        print("Let's use", torch.cuda.device_count(), "GPUs!")
-    model = nn.DataParallel(model)
-
+        print()
+        logger.info("Let's use {} GPUs!".format(torch.cuda.device_count()))
+        model = nn.DataParallel(model).cuda()
     model.to(device)
+    
+    gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
+    logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
 
     model.train()
 
     min_valid_loss = np.inf
+    idx = 1
 
     for epoch in range(1, epochs):
 
         logger.info("Epoch {}/{}".format(epoch, epochs))
+        
         train_loss = 0.0
         for _, train_batch in enumerate(train_data):
-            
-			# get the inputs;
-            input_ids = train_batch["input_ids"].to(device)
-            attention_mask = train_batch["attention_mask"].to(device)
-            token_type_ids = train_batch["token_type_ids"].to(device)
-            bbox = train_batch["bbox"].to(device)
-            image = train_batch["image"].to(device)
-            start_positions = train_batch["start_positions"].to(device)
-            end_positions = train_batch["end_positions"].to(device)
+            input_ids         = train_batch["input_ids"].to(device)
+            attention_mask    = train_batch["attention_mask"].to(device)
+            token_type_ids    = train_batch["token_type_ids"].to(device)
+            bbox              = train_batch["bbox"].to(device)
+            image             = train_batch["image"].to(device)
+            start_positions   = train_batch["start_positions"].to(device)
+            end_positions     = train_batch["end_positions"].to(device)
+
+            # DEBUG for multi-gpus training
+            print("Model device: {}".format(model.device_ids))
+            print("Weights device: {}".format(next(model.parameters()).device))
+            print("input_ids device: {}".format(input_ids.device))
+            print("attention_mask device: {}".format(attention_mask.device))
+            print("token_type_ids device: {}".format(token_type_ids.device))
+            print("bbox device: {}".format(bbox.device))
+            print("image device: {}".format(image.device))
+            print("start_positions device: {}".format(start_positions.device))
+            print("end_positions device: {}".format(end_positions.device))
+            input()
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -63,39 +82,46 @@ def train(model, train_data, val_data,
 
             train_loss += loss.item()
 
-        logger.info("Training loss: {}".format(train_loss/len(train_data)))
 
-        # Evaluate on validation set
-        if epoch % eval_freq == 0:
-            val_loss = 0.0
-            model.eval()
-            for _, val_batch in enumerate(val_data):
-                # Transfer Data to GPU if available
-                input_ids = val_batch["input_ids"].to(device)
-                attention_mask = val_batch["attention_mask"].to(device)
-                token_type_ids = val_batch["token_type_ids"].to(device)
-                bbox = val_batch["bbox"].to(device)
-                image = val_batch["image"].to(device)
-                start_positions = val_batch["start_positions"].to(device)
-                end_positions = val_batch["end_positions"].to(device)
+            # Evaluate current model on entire validation dataset after each `eval_freq` iterations
+            if idx % eval_freq == 1:
+                val_loss = 0.0
+                model.eval()
+                for _, val_batch in enumerate(val_data):
+                    
+                    val_batch               = val_batch.to(device)
+                    input_ids               = val_batch["input_ids"].to(device)
+                    attention_mask          = val_batch["attention_mask"].to(device)
+                    token_type_ids          = val_batch["token_type_ids"].to(device)
+                    bbox                    = val_batch["bbox"].to(device)
+                    image                   = val_batch["image"].to(device)
+                    start_positions         = val_batch["start_positions"].to(device)
+                    end_positions           = val_batch["end_positions"].to(device)
+                    
+                    outputs = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids,
+                                bbox=bbox, image=image, start_positions=start_positions, end_positions=end_positions)
+                    loss = outputs.loss
+                    # Calculate Loss
+                    val_loss += loss.item()
                 
-                outputs = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids,
-                            bbox=bbox, image=image, start_positions=start_positions, end_positions=end_positions)
-                loss = outputs.loss
-                # Calculate Loss
-                val_loss += loss.item()
-            
-            loss_log.info("Epochs: {:<6}/{} - train_loss: {:<6} - val_loss: {:<6}".format(epoch, epochs, train_loss/len(train_data), val_loss/len(val_data)))
-            logger.info("Validation loss: {}".format(val_loss/len(val_data)))
+                logger.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
+                loss_log.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
 
-            if epoch % save_freq == 0:
-                logger.info("Saving model to {}".format(os.path.join(work_dir, str(epoch).zfill(5)+'.pth')))
-                torch.save(model.state_dict(), os.path.join(work_dir, str(epoch).zfill(5)+'.pth'))
+                    
+                if min_valid_loss > val_loss/len(val_data):
+                    logger.info("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss/len(val_data)))
+                    torch.save(model.state_dict(), os.path.join(work_dir, 'best'+'.pth'))
+                    min_valid_loss = val_loss/len(val_data)
+
+                # Save model each save_freq iteration
+                if idx % save_freq == 1:
+                    logger.info("Saving model to {}".format(os.path.join(work_dir, str(idx).zfill(5)+'.pth')))
+                    torch.save(model.state_dict(), os.path.join(work_dir, str(idx).zfill(5)+'.pth'))
+
+                # Reset training loss
+                train_loss = 0.0
                 
-            if min_valid_loss > val_loss:
-                logger.info("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss))
-                torch.save(model.state_dict(), os.path.join(work_dir, 'best'+'.pth'))
-                min_valid_loss = val_loss
+            idx += 1
 
 
     logger.info("Done !")
@@ -120,14 +146,21 @@ def main(args):
         config['batch_size'], config['eval_freq'], config['save_freq'], config['num_workers']
     logger.info("Configuration: {}".format(config))
 
+    #  Check whether feature path file existing or not
+    if not os.path.exists(TRAIN_FEATURE_PATH):
+        logger.error("Invalid training feature path")
+        exit(0)
+    if not os.path.exists(VAL_FEATURE_PATH):
+        logger.error("Invalid validation feature path")
+        exit(0)
 
 	# Load data into program 
-    logger.info("Loading training dataset ...")
+    logger.info("Loading training dataset from {} ...".format(TRAIN_FEATURE_PATH))
     train_dataloader = load_feature_from_file(path=TRAIN_FEATURE_PATH, 
                                             batch_size=batch_size, num_workers=num_workers)
 
-    logger.info("Loading validation dataset ...")
-    val_dataloader = load_feature_from_file(path=VAL_FEATURE_PATH, 
+    logger.info("Loading validation dataset from {} ...".format(TRAIN_FEATURE_PATH))
+    val_dataloader = load_feature_from_file(path=TRAIN_FEATURE_PATH, 
                                             batch_size=batch_size, num_workers=num_workers)
 
     logger.info("Training size: {} - Validation size: {}".format(
@@ -136,14 +169,13 @@ def main(args):
 	# Create model for fine-tuning
     logger.info("Loading pre-training model from {} checkpoint".format(MODEL_CHECKPOINT))
     model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT)
-
+    
 	# Fine-tuning model
-    # os.environ['CUDA_VISIBLE_DEVICES'] = 2
     trained_model = train(model=model, train_data=train_dataloader, val_data=val_dataloader,
 						epochs=epochs, optimizer=optimizer, lr=lr, loss_log=loss_log, save_freq=save_freq,
                         work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq)
 
-	# Evaluate model on validation set
+	
 
 
 if __name__ == '__main__':

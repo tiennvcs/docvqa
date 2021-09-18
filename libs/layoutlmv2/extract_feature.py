@@ -1,6 +1,9 @@
 """
     Usages:
-        python extract_feature.py --input_dir 
+        python extract_feature.py \
+            --input_dir /mlcv/Databases/DocVQA_2020-21/task_1/val/ \
+            --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/val \
+            --batch_size 16 
 """
 
 import os, json, argparse
@@ -10,7 +13,6 @@ from utils import (encode_dataset, get_avail_ocr_feature,
 from datasets import Dataset
 from config import DEBUG, features
 import torch
-import time
 
 
 def extract_from_dir(data_dir, output_dir, batch_size):
@@ -43,9 +45,13 @@ def extract_from_dir(data_dir, output_dir, batch_size):
     print("Encoding entire data set ...")
     encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
 					remove_columns=dataset_with_ocr.column_names, features=features)    
-    output_file = os.path.join(output_dir, 'extracted_features' + time.strftime("%Y%m%d-%H%M%S") + '.pt')
+    output_file = os.path.join(output_dir, 'extracted_features' + '.pt')
     print("Saving extracted feature to {} ...".format(output_file))
     torch.save(encoded_dataset, output_file)
+
+    # Check save successfull or not
+    dataloader = load_feature_from_file(path=output_file ,batch_size=2, num_workers=2)
+    print(dataloader)
     print("Successfully !")
 
 
@@ -58,7 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_dir', required=True,
         help='The directory output contain feature file'
     )
-    parser.add_argument('--batch_size', required=False, default=16,
+    parser.add_argument('--batch_size', required=False, default=16,  type=int,
         help='The number of batch size when ocr/encoding data'
     )
     args = vars(parser.parse_args())
@@ -68,6 +74,6 @@ if __name__ == '__main__':
                     output_dir=args['output_dir'], batch_size=args['batch_size'])
     
     # Test extract successful
-    dataloader = load_feature_from_file(path=os.path.join(args['output_dir'], 'extracted_feature.pt'), 
-                                batch_size=1, num_workers=2)
-    print(dataloader)
+    # dataloader = load_feature_from_file(path=os.path.join(args['output_dir'], 'extracted_feature.pt'), 
+    #                             batch_size=1, num_workers=2)
+    # print(dataloader)

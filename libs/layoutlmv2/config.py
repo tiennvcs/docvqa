@@ -7,14 +7,14 @@ ROOT_DIR           = '/mlcv/Databases/DocVQA_2020-21/task_1/'
 TRAIN_DIR          = os.path.join(ROOT_DIR, 'train/')
 VAL_DIR            = os.path.join(ROOT_DIR, 'val/')
 try:
-    FEATURE_DIR        = os.path.join(ROOT_DIR, 'extracted_features')
+    FEATURE_DIR        = os.path.join(ROOT_DIR, 'extracted_features/layoutlmv2')
     TRAIN_FEATURE_PATH = glob2.glob(os.path.join(FEATURE_DIR, 'train', '*.pt'))[0]
     VAL_FEATURE_PATH   = glob2.glob(os.path.join(FEATURE_DIR, 'val', '*.pt'))[0]
 except:
     print("DON'T WORRY !")
 MODEL_CHECKPOINT   = 'microsoft/layoutlmv2-base-uncased'
 
-
+BATCH_SIZE        = 16            # Change if want extract feature with your own batch size
 DEBUG              = 100
 
 features           = Features({
@@ -35,8 +35,8 @@ TRAINING_CONFIGs   = {
                                             'epochs': 50,
                                             'batch_size': 2,
                                             'momentum': 0.9,
-                                            'eval_freq': 1,
-                                            'save_freq': 10,
+                                            'eval_freq': 10,       # Evaluate model each 1000 iterations
+                                            'save_freq': 20,       # Save checkpoint each 1000 iterations, it must be divisible for eval_freq
                                             'num_workers': 4,
                                     },                
 }

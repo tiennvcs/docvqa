@@ -1,6 +1,7 @@
 import torch
 import os
 import json
+import subprocess
 import logging
 import pandas as pd
 from datasets import Dataset
@@ -9,7 +10,6 @@ from transformers import LayoutLMv2FeatureExtractor
 from config import MODEL_CHECKPOINT, features, DEBUG, BATCH_SIZE
 import cv2
 import numpy as np
-
 feature_extractor = LayoutLMv2FeatureExtractor()
 tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT)
 
@@ -99,6 +99,7 @@ def get_avail_ocr_feature(examples):
 
 
 def encode_dataset(examples, max_length=512):
+
     questions = examples['question']
     words = examples['words']
     boxes = examples['boxes']
@@ -148,16 +149,13 @@ def encode_dataset(examples, max_length=512):
         else:
             start_positions[batch_index] = cls_index
             end_positions[batch_index]   = cls_index
-    
-    # while BATCH_SIZE - 3 < len(start_positions) < BATCH_SIZE:
-    #     start_positions.append(cls_index)
-    #     end_positions.append(cls_index)
 
     encoding['image'] = examples['image']
     encoding['start_positions'] = start_positions
     encoding['end_positions'] = end_positions
 
     return encoding
+
 
 def gather_ocr_file(ocr_dir, img_paths):
     
@@ -203,9 +201,9 @@ def load_and_process_data(data_dir, batch_size, num_workers):
 
 
 def load_feature_from_file(path, batch_size=2, num_workers=4):
-    encoded_dataset = torch.load(path)
+    encoded_dataset = torch.load(path, map_location=torch.device('cuda:0' if torch.cuda.is_available() else "cpu"))
     encoded_dataset.set_format(type="torch")
-    dataloader = torch.utils.data.DataLoader(encoded_dataset, shuffle=True,
+    dataloader = torch.utils.data.DataLoader(encoded_dataset, shuffle=True, pin_memory=True,
                                             batch_size=batch_size, num_workers=num_workers)
     return dataloader
 
@@ -236,3 +234,22 @@ def create_logger(file_path):
         log.addHandler(ch)
 
     return log
+
+
+def get_gpu_memory_map():
+    """Get the current gpu usage.
+
+    Returns
+    -------
+    usage: dict
+        Keys are device ids as integers.
+        Values are memory usage as integers in MB.
+    """
+    result = subprocess.check_output(
+        [
+            'nvidia-smi', '--query-gpu=memory.used',
+            '--format=csv,nounits,noheader'
+        ], encoding='utf-8')
+    # Convert lines into a dictionary
+    gpu_memory = [int(x) for x in result.strip().split('\n')]
+    return np.array(gpu_memory)
