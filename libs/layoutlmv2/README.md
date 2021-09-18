@@ -45,8 +45,9 @@ The source code implement handle the DocVQA dataset. If you want to running on y
 |   `-- val_v1.0.json
 ```
 #### Annotation
-The annotation files ({train_v1.0/val_v1.0/test.v1.0}.json) must have the same and following format.
-```
+The annotation files (`{train_v1.0/val_v1.0/test.v1.0}.json`) must have the same and following format.
+
+```json
 {
     "dataset_name": "docvqa",
     "dataset_version": "1.0",
