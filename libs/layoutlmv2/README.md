@@ -123,10 +123,10 @@ features           = Features({
 
 Run the following command to extract feature from validation dataset directory (train and test dataset will be performed similar).
 ```bash
-	python extract_feature.py \
-		    --input_dir /mlcv/Databases/DocVQA_2020-21/task_1/val/
-		    --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/val/
-		    --batch_size 16
+$ python extract_feature.py \
+	    --input_dir /mlcv/Databases/DocVQA_2020-21/task_1/val/
+	    --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/val/
+	    --batch_size 16
 ```
 If run successfully, check the output feature file at `/mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/val`.
 
@@ -173,14 +173,15 @@ $ python inference.py --input example_input.json --model_type microsoft/layoutlm
 
 *Output:*
 ```bash
-AHIHI
+
 ```
 
 
 ## Experiment and Results
-*Will coming soon*
-### Fine-tuning plot
+*Coming soon*
 
+### Fine-tuning plot
+*Coming soon*
 
 ### Summary results
 
