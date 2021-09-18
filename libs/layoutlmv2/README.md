@@ -98,6 +98,7 @@ Here is some availabel dataset containing extracted features and also converted 
 	- DocVQA dataset *(coming soon)*
 	- InfographicVQA dataset *(coming soon)*
 	- VietInfographicVQA dataset *(coming soon)*
+
 - Model
         - Our model fine-tuning in 2 epoch on DocVQA dataset *(coming soon)*
         - Our model fine-tuning in 2 epoch on InfographicVQA dataset *(coming soon)*
