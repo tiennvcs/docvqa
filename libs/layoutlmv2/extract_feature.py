@@ -1,3 +1,8 @@
+"""
+    Usages:
+        python extract_feature.py --input_dir 
+"""
+
 import os, json, argparse
 import pandas as pd
 from utils import (encode_dataset, get_avail_ocr_feature, 
@@ -38,7 +43,7 @@ def extract_from_dir(data_dir, output_dir, batch_size):
     print("Encoding entire data set ...")
     encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
 					remove_columns=dataset_with_ocr.column_names, features=features)    
-    output_file = os.path.join(output_dir, 'extracted_feature' + time.strftime("%Y%m%d-%H%M%S"))
+    output_file = os.path.join(output_dir, 'extracted_features' + time.strftime("%Y%m%d-%H%M%S") + '.pt')
     print("Saving extracted feature to {} ...".format(output_file))
     torch.save(encoded_dataset, output_file)
     print("Successfully !")
@@ -57,7 +62,12 @@ if __name__ == '__main__':
         help='The number of batch size when ocr/encoding data'
     )
     args = vars(parser.parse_args())
-    extract_from_dir(data_dir=args['input_dir'], output_dir=args['output_dir'])
+    
+    print("Extracting feature ...")
+    extract_from_dir(data_dir=args['input_dir'], 
+                    output_dir=args['output_dir'], batch_size=args['batch_size'])
+    
+    # Test extract successful
     dataloader = load_feature_from_file(path=os.path.join(args['output_dir'], 'extracted_feature.pt'), 
                                 batch_size=1, num_workers=2)
     print(dataloader)
