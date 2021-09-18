@@ -22,17 +22,27 @@ $ ./install.sh
 ```
 
 ## Preparation
-*Will coming soon*
+
 ### Extracted features
-We can found extracted feature at:
-	- DocVQA: 
-		+ Train
-		+ Val
-		+ Test
-	- InfographicVQA:
-		+ Train
-		+ Val
-		+ Test
+
+If you want to fine-tuning pre-training model on your own dataset. You need to extract feature from its. A sample feature is define a dictionay bellow:
+
+```python
+features           = Features({
+                        'input_ids': Sequence(feature=Value(dtype='int64')),
+                        'bbox': Array2D(dtype="int64", shape=(512, 4)),
+                        'attention_mask': Sequence(Value(dtype='int64')),
+                        'token_type_ids': Sequence(Value(dtype='int64')),
+                        'image': Array3D(dtype="int64", shape=(3, 224, 224)),
+                        'start_positions': Value(dtype='int64'),
+                        'end_positions': Value(dtype='int64'),
+                    })
+```
+
+Run the following command to extract feature from train/val/test directory
+```bash
+
+```
 
 ### Fine-tuned model
 	- Model 1
