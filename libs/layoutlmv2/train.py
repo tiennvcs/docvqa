@@ -1,18 +1,19 @@
 """
 	Usages:
-		python train.py --train_config default --work_dir runs/train/layoutlmv2-base-uncased_50e/
+		CUDA_VISIIBLE_DEVICES=0 python train.py --train_config default --work_dir runs/train/layoutlmv2-base-uncased_50e/
 
 """
 
 import argparse
 from transformers import AutoModelForQuestionAnswering
 import torch.nn as nn
-from utils import load_and_process_data, create_logger
-from config import TRAIN_DATA, VAL_DATA, MODEL_CHECKPOINT, TRAINING_CONFIGs
+from utils import create_logger, load_feature_from_file
+from config import TRAIN_FEATURE_PATH, VAL_FEATURE_PATH, MODEL_CHECKPOINT, TRAINING_CONFIGs
 import numpy as np
 import torch
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 
 def train(model, train_data, val_data, 
         epochs, optimizer, lr, loss_log, save_freq,
@@ -118,14 +119,17 @@ def main(args):
         config['lr'], config['epochs'], \
         config['batch_size'], config['eval_freq'], config['save_freq'], config['num_workers']
     logger.info("Configuration: {}".format(config))
-	
+
+
 	# Load data into program 
     logger.info("Loading training dataset ...")
-    train_dataloader = load_and_process_data(data_dir=TRAIN_DATA, 
-                num_workers=num_workers, batch_size=batch_size)
+    train_dataloader = load_feature_from_file(path=TRAIN_FEATURE_PATH, 
+                                            batch_size=batch_size, num_workers=num_workers)
+
     logger.info("Loading validation dataset ...")
-    val_dataloader   = load_and_process_data(data_dir=VAL_DATA,
-                num_workers=num_workers, batch_size=batch_size)
+    val_dataloader = load_feature_from_file(path=VAL_FEATURE_PATH, 
+                                            batch_size=batch_size, num_workers=num_workers)
+
     logger.info("Training size: {} - Validation size: {}".format(
         len(train_dataloader.dataset), len(val_dataloader.dataset)))
 
