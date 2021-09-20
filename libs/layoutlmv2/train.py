@@ -28,12 +28,12 @@ def train(model, train_data, val_data,
     device = torch.device("cuda", gpu_ids[0]) if gpu_ids is not None else torch.device("cpu")
     
     GPU_usage_before = get_gpu_memory_map()
-    model.cuda(device)
 
     if torch.cuda.device_count() > 1:
         logger.info("Let's use {} GPUs!".format(torch.cuda.device_count()))
         model = nn.DataParallel(model).cuda()
-    
+    model.to(device)
+
     gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
     logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
 
