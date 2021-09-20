@@ -1,8 +1,8 @@
 """
     Usages:
         python extract_feature.py \
-            --input_dir /mlcv/Databases/DocVQA_2020-21/task_1/val/ \
-            --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/layoutlmv2/val \
+            --input_dir /mlcv/Databases/DocVQA_2020-21/task_3/val/ \
+            --output_dir /mlcv/Databases/DocVQA_2020-21/task_3/extracted_features/layoutlmv2/val \
             --batch_size 16 
 """
 
@@ -12,7 +12,6 @@ from utils import (encode_dataset, get_avail_ocr_feature,
                 gather_ocr_file, load_feature_from_file)
 from datasets import Dataset
 from config import DEBUG, features
-import torch
 
 
 def extract_from_dir(data_dir, output_dir, batch_size):
@@ -26,10 +25,16 @@ def extract_from_dir(data_dir, output_dir, batch_size):
     with open(label_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     df = pd.DataFrame(data['data'])
-    df['image'] = [os.path.join(data_dir, img_file) for img_file in df['image']]
 
+    if not 'image' in df.keys():
+        df['image'] = [os.path.join(data_dir, 'documents', img_file) \
+                                for img_file in df['image_local_name']]
+    else:
+        df['image'] = [os.path.join(data_dir, img_file) for img_file in df['image']]
+    
     # Check availabel OCR file
-    ocr_dir = [subdir for subdir in os.listdir(data_dir) if "ocr" in subdir]
+    ocr_dir = [subdir for subdir in os.listdir(data_dir) if "ocr_results" in subdir]
+
     if 'our_output_file' in df.columns:
         df['ocr_output_file'] = [os.path.join(data_dir, ocr_file) for ocr_file in df['ocr_output_file']]
     else:

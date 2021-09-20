@@ -30,7 +30,8 @@ def train(model, train_data, val_data,
 
     if torch.cuda.device_count() > 1:
         logger.info("Let's use {} GPUs!".format(torch.cuda.device_count()))
-        model = nn.DataParallel(model).cuda()
+        model = nn.DataParallel(model)
+
     model = model.to(device)
 
     gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
@@ -160,7 +161,7 @@ def main(args):
 
 	# Create model for fine-tuning
     logger.info("Loading pre-training model from {} checkpoint".format(MODEL_CHECKPOINT))
-    model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT).cuda()
+    model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT)
     
 	# Fine-tuning model
     trained_model = train(model=model, train_data=train_dataloader, val_data=val_dataloader,

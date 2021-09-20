@@ -58,27 +58,22 @@ def get_ocr_words_and_boxes(examples):
     return examples
 
 
-def get_avail_ocr_feature(examples):
-    
-    # get a batch of document images
-    images = [cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB) for image_file in examples['image']]
+def normalize_bbox(bbox, width, height):
+     return [
+         int(1000 * (bbox[0] / width)),
+         int(1000 * (bbox[1] / height)),
+         int(1000 * (bbox[2] / width)),
+         int(1000 * (bbox[3] / height)),
+    ]
 
-    # resize every image to 224x224 + apply tesseract to get words + normalized boxes
-    images = [cv2.resize(src=img, dsize=(224, 224), interpolation=cv2.INTER_AREA) for img in images]
 
-    # Reshape image to disized shape
-    images = [img.transpose(2, 0, 1) for img in images]
-    
-    # Load ocr info
-    examples['image'] = images
-    examples['words'] = []
-    examples['boxes'] = []
-    # Loop through each image
-    for i in range(len(examples['image'])):
-        words_img = []
-        boxes_img = []
-        with open(examples['ocr_output_file'][i], 'r') as f:
-            data = json.load(f)   # data = {"status": [], "recognitionResults": []}
+def read_ocr_annotation(file_path, shape):
+    words_img = []
+    boxes_img = []
+    height, width = shape
+    with open(file_path, 'r') as f:
+        data = json.load(f)   # data = {"status": [], "recognitionResults": []}
+        try:
             recognitionResults = data['recognitionResults']
             # Loop through each recognition line
             for reg_result in recognitionResults:
@@ -93,8 +88,45 @@ def get_avail_ocr_feature(examples):
                         words_img.append(word_info['text'])
                         boxes_img.append(normalize_bbox(bbox=[x_min, y_min, x_max, y_max], 
                             width=reg_result['width'], height=reg_result['height']))
-            examples['words'].append(words_img)
-            examples['boxes'].append(boxes_img)
+        except:
+            if not 'WORD' in data.keys():
+                print("! Ignore ", file_path)
+                return [], []
+                
+            for word in data['WORD']:
+                text = word['Text']
+                bbox = word['Geometry']['BoundingBox']
+                bbox = [bbox['Left']*width, bbox['Top']*height, 
+                        (bbox['Left'] + bbox['Width'])*width, 
+                        (bbox['Top'] + bbox['Height'])*height]
+                nl_bbox = normalize_bbox(bbox=bbox, width=width, height=height)
+                words_img.append(text)
+                boxes_img.append(nl_bbox)
+    
+    return (words_img, boxes_img)
+
+
+def get_avail_ocr_feature(examples):
+    
+    # get a batch of document images
+    images = [cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB) for image_file in examples['image']]
+    org_shapes  = [img.shape[0:2] for img in images]
+
+    # resize every image to 224x224 + apply tesseract to get words + normalized boxes
+    images = [cv2.resize(src=img, dsize=(224, 224), interpolation=cv2.INTER_AREA) for img in images]
+
+    # Reshape image to disized shape
+    images = [img.transpose(2, 0, 1) for img in images]
+    
+    # Load ocr info
+    examples['image'] = images
+    examples['words'] = []
+    examples['boxes'] = []
+    # Loop through each image
+    for i in range(len(examples['image'])):
+        words_img, boxes_img = read_ocr_annotation(file_path=examples['ocr_output_file'][i], shape=org_shapes[i])
+        examples['words'].append(words_img)
+        examples['boxes'].append(boxes_img)
 
     return examples
 
@@ -208,16 +240,6 @@ def load_feature_from_file(path, batch_size=2, num_workers=4):
     dataloader = torch.utils.data.DataLoader(dataset, shuffle=True, pin_memory=True,
                                             batch_size=batch_size, num_workers=num_workers)
     return dataloader
-
-
-
-def normalize_bbox(bbox, width, height):
-     return [
-         int(1000 * (bbox[0] / width)),
-         int(1000 * (bbox[1] / height)),
-         int(1000 * (bbox[2] / width)),
-         int(1000 * (bbox[3] / height)),
-    ]
 
 
 def create_logger(file_path):

@@ -3,7 +3,7 @@ from datasets import Features, Sequence, Value, Array2D, Array3D
 from torch.optim import AdamW, SGD, Adam
 
 
-ROOT_DIR           = '/mlcv/Databases/DocVQA_2020-21/task_1/'
+ROOT_DIR           = '/mlcv/Databases/DocVQA_2020-21/task_3/'
 TRAIN_DIR          = os.path.join(ROOT_DIR, 'train/')
 VAL_DIR            = os.path.join(ROOT_DIR, 'val/')
 try:
@@ -12,9 +12,7 @@ try:
     VAL_FEATURE_PATH   = os.path.join(FEATURE_DIR, 'val')
 except:
     print("DON'T WORRY !")
-
 MODEL_CHECKPOINT   = 'microsoft/layoutlmv2-base-uncased'
-
 BATCH_SIZE         = 16          # Change if want extract feature with your own batch size
 DEBUG              = 1000
 
@@ -36,8 +34,8 @@ TRAINING_CONFIGs   = {
                                             'epochs': 2,
                                             'batch_size': 2,
                                             'momentum': 0.9,
-                                            'eval_freq': 10,       # Evaluate model each 1000 iterations
-                                            'save_freq': 500,       # Save checkpoint each 1000 iterations, it must be divisible for eval_freq
+                                            'eval_freq': 10,       # Evaluate model each 100 iterations
+                                            'save_freq': 500,       # Save checkpoint each 500 iterations, it must be divisible for eval_freq
                                             'num_workers': 4,
                                     },                
 }
