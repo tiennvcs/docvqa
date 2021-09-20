@@ -12,26 +12,27 @@ from config import TRAIN_FEATURE_PATH, VAL_FEATURE_PATH, MODEL_CHECKPOINT, TRAIN
 import numpy as np
 import torch
 import os
+from torch.nn.parallel import DistributedDataParallel
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 
 
 def train(model, train_data, val_data, 
         epochs, optimizer, lr, loss_log, save_freq,
-        eval_freq, work_dir, logger):
+        eval_freq, work_dir, logger, gpu_ids):
 
 
     optimizer = optimizer(model.parameters(), lr=lr)
 
     # Measure GPU memory of model
-    GPU_usage_before = get_gpu_memory_map()
-
-    device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda", gpu_ids[0]) if gpu_ids is not None else torch.device("cpu")
     
+    GPU_usage_before = get_gpu_memory_map()
+    model.cuda(device)
+
     if torch.cuda.device_count() > 1:
-        print()
         logger.info("Let's use {} GPUs!".format(torch.cuda.device_count()))
         model = nn.DataParallel(model).cuda()
-    model.to(device)
     
     gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
     logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
@@ -47,6 +48,7 @@ def train(model, train_data, val_data,
         
         train_loss = 0.0
         for _, train_batch in enumerate(train_data):
+
             input_ids         = train_batch["input_ids"].to(device)
             attention_mask    = train_batch["attention_mask"].to(device)
             token_type_ids    = train_batch["token_type_ids"].to(device)
@@ -56,16 +58,16 @@ def train(model, train_data, val_data,
             end_positions     = train_batch["end_positions"].to(device)
 
             # DEBUG for multi-gpus training
-            print("Model device: {}".format(model.device_ids))
-            print("Weights device: {}".format(next(model.parameters()).device))
-            print("input_ids device: {}".format(input_ids.device))
-            print("attention_mask device: {}".format(attention_mask.device))
-            print("token_type_ids device: {}".format(token_type_ids.device))
-            print("bbox device: {}".format(bbox.device))
-            print("image device: {}".format(image.device))
-            print("start_positions device: {}".format(start_positions.device))
-            print("end_positions device: {}".format(end_positions.device))
-            input()
+            # print("Model device: {}".format(model.device))
+            # print("Weights device: {}".format(next(model.parameters()).device))
+            # print("input_ids device: {}".format(input_ids.device))
+            # print("attention_mask device: {}".format(attention_mask.device))
+            # print("token_type_ids device: {}".format(token_type_ids.device))
+            # print("bbox device: {}".format(bbox.device))
+            # print("image device: {}".format(image.device))
+            # print("start_positions device: {}".format(start_positions.device))
+            # print("end_positions device: {}".format(end_positions.device))
+            #input()
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -89,7 +91,7 @@ def train(model, train_data, val_data,
                 model.eval()
                 for _, val_batch in enumerate(val_data):
                     
-                    val_batch               = val_batch.to(device)
+                    # val_batch               = val_batch.to(device)
                     input_ids               = val_batch["input_ids"].to(device)
                     attention_mask          = val_batch["attention_mask"].to(device)
                     token_type_ids          = val_batch["token_type_ids"].to(device)
@@ -132,6 +134,19 @@ def train(model, train_data, val_data,
 
 def main(args):
 
+    gpu_ids = [i for i in range(torch.cuda.device_count())]
+    #rank = 2 * len(gpu_ids) + gpu_ids[0]
+    #world_size = len(gpu_ids)*2
+    #os.environ['MASTER_ADDR'] = '10.57.23.164'              #
+    #os.environ['MASTER_PORT'] = '8888' 
+    torch.cuda.set_device(gpu_ids[0])
+    
+    #torch.distributed.init_process_group(backend='nccl',                                         
+    #		init_method='env://',                                   
+    #	world_size=world_size,                              
+    #	rank=rank
+    #)
+
     if not os.path.exists(args['work_dir']):
         os.mkdir(args['work_dir'])
     # Create logger
@@ -146,7 +161,7 @@ def main(args):
         config['batch_size'], config['eval_freq'], config['save_freq'], config['num_workers']
     logger.info("Configuration: {}".format(config))
 
-    #  Check whether feature path file existing or not
+    # Check whether feature path file existing or not
     if not os.path.exists(TRAIN_FEATURE_PATH):
         logger.error("Invalid training feature path")
         exit(0)
@@ -159,8 +174,8 @@ def main(args):
     train_dataloader = load_feature_from_file(path=TRAIN_FEATURE_PATH, 
                                             batch_size=batch_size, num_workers=num_workers)
 
-    logger.info("Loading validation dataset from {} ...".format(TRAIN_FEATURE_PATH))
-    val_dataloader = load_feature_from_file(path=TRAIN_FEATURE_PATH, 
+    logger.info("Loading validation dataset from {} ...".format(VAL_FEATURE_PATH))
+    val_dataloader = load_feature_from_file(path=VAL_FEATURE_PATH, 
                                             batch_size=batch_size, num_workers=num_workers)
 
     logger.info("Training size: {} - Validation size: {}".format(
@@ -168,12 +183,12 @@ def main(args):
 
 	# Create model for fine-tuning
     logger.info("Loading pre-training model from {} checkpoint".format(MODEL_CHECKPOINT))
-    model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT)
+    model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT).cuda()
     
 	# Fine-tuning model
     trained_model = train(model=model, train_data=train_dataloader, val_data=val_dataloader,
 						epochs=epochs, optimizer=optimizer, lr=lr, loss_log=loss_log, save_freq=save_freq,
-                        work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq)
+                        work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq, gpu_ids=gpu_ids)
 
 	
 
