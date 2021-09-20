@@ -10,8 +10,9 @@ from transformers import LayoutLMv2FeatureExtractor
 from config import MODEL_CHECKPOINT, features, DEBUG, BATCH_SIZE
 import cv2
 import numpy as np
-feature_extractor = LayoutLMv2FeatureExtractor()
+from datasets import Dataset
 tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT)
+feature_extractor = LayoutLMv2FeatureExtractor()
 
 
 def subfinder(words_list, answer_list):
@@ -201,9 +202,10 @@ def load_and_process_data(data_dir, batch_size, num_workers):
 
 
 def load_feature_from_file(path, batch_size=2, num_workers=4):
-    encoded_dataset = torch.load(path, map_location=torch.device('cuda:0' if torch.cuda.is_available() else "cpu"))
-    encoded_dataset.set_format(type="torch")
-    dataloader = torch.utils.data.DataLoader(encoded_dataset, shuffle=True, pin_memory=True,
+    # encoded_dataset = torch.load(path, map_location=torch.device('cuda:0' if torch.cuda.is_available() else "cpu"))
+    dataset = Dataset.load_from_disk(path)
+    dataset.set_format(type="torch")
+    dataloader = torch.utils.data.DataLoader(dataset, shuffle=True, pin_memory=True,
                                             batch_size=batch_size, num_workers=num_workers)
     return dataloader
 

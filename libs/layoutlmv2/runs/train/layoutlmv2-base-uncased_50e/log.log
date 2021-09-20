@@ -1,9 +1,0 @@
-2021-09-18 09:45:37,110 - INFO - Loading training configuration ...
-2021-09-18 09:45:37,110 - INFO - Configuration: {'optimizer': <class 'torch.optim.adam.Adam'>, 'lr': 0.0001, 'epochs': 50, 'batch_size': 2, 'momentum': 0.9, 'eval_freq': 10, 'save_freq': 20, 'num_workers': 4}
-2021-09-18 09:45:37,111 - INFO - Loading training dataset from /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/layoutlmv2/train/extracted_features.pt ...
-2021-09-18 09:45:37,795 - INFO - Loading validation dataset from /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/layoutlmv2/train/extracted_features.pt ...
-2021-09-18 09:45:38,231 - INFO - Training size: 96 - Validation size: 96
-2021-09-18 09:45:38,231 - INFO - Loading pre-training model from microsoft/layoutlmv2-base-uncased checkpoint
-2021-09-18 09:45:45,055 - INFO - Let's use 2 GPUs!
-2021-09-18 09:45:49,055 - INFO - GPUs usages for model: 1945 Mb
-2021-09-18 09:45:49,064 - INFO - Epoch 1/50

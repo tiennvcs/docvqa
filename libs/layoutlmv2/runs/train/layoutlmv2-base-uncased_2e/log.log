@@ -1,0 +1,265 @@
+2021-09-19 16:21:45,569 - INFO - Loading training configuration ...
+2021-09-19 16:21:45,569 - INFO - Configuration: {'optimizer': <class 'torch.optim.adam.Adam'>, 'lr': 0.0001, 'epochs': 2, 'batch_size': 2, 'momentum': 0.9, 'eval_freq': 10, 'save_freq': 100, 'num_workers': 4}
+2021-09-19 16:21:45,571 - INFO - Loading training dataset from /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/layoutlmv2/train ...
+2021-09-19 16:21:45,712 - INFO - Loading validation dataset from /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/layoutlmv2/val ...
+2021-09-19 16:21:45,731 - INFO - Training size: 39456 - Validation size: 5344
+2021-09-19 16:21:45,732 - INFO - Loading pre-training model from microsoft/layoutlmv2-base-uncased checkpoint
+2021-09-19 16:21:57,253 - INFO - GPUs usages for model: 0 Mb
+2021-09-19 16:21:57,260 - INFO - Epoch 1/2
+2021-09-19 16:25:23,488 - INFO - Iterations: 1      - epoch: 1   - train_loss: 0.6211153984069824 - val_loss: 6.155830624574673
+2021-09-19 16:25:23,489 - INFO - Found best model !! Validation loss descreased from inf to 6.155830624574673
+2021-09-19 16:25:32,465 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00001.pth
+2021-09-19 16:29:11,722 - INFO - Iterations: 11     - epoch: 1   - train_loss: 5.850575399398804 - val_loss: 5.434632692865269
+2021-09-19 16:29:11,722 - INFO - Found best model !! Validation loss descreased from 6.155830624574673 to 5.434632692865269
+2021-09-19 16:32:53,258 - INFO - Iterations: 21     - epoch: 1   - train_loss: 5.117152404785156 - val_loss: 4.9650677690605916
+2021-09-19 16:32:53,259 - INFO - Found best model !! Validation loss descreased from 5.434632692865269 to 4.9650677690605916
+2021-09-19 16:36:30,180 - INFO - Iterations: 31     - epoch: 1   - train_loss: 4.520907640457153 - val_loss: 4.82725125238924
+2021-09-19 16:36:30,301 - INFO - Found best model !! Validation loss descreased from 4.9650677690605916 to 4.82725125238924
+2021-09-19 16:40:11,973 - INFO - Iterations: 41     - epoch: 1   - train_loss: 4.464647507667541 - val_loss: 4.793033364557934
+2021-09-19 16:40:11,974 - INFO - Found best model !! Validation loss descreased from 4.82725125238924 to 4.793033364557934
+2021-09-19 16:43:51,583 - INFO - Iterations: 51     - epoch: 1   - train_loss: 4.457219457626342 - val_loss: 4.649582292862281
+2021-09-19 16:43:51,584 - INFO - Found best model !! Validation loss descreased from 4.793033364557934 to 4.649582292862281
+2021-09-19 16:47:45,119 - INFO - Iterations: 61     - epoch: 1   - train_loss: 4.267486214637756 - val_loss: 5.261919825733779
+2021-09-19 16:51:24,198 - INFO - Iterations: 71     - epoch: 1   - train_loss: 4.613044691085816 - val_loss: 4.929903913936215
+2021-09-19 16:55:06,064 - INFO - Iterations: 81     - epoch: 1   - train_loss: 4.332731056213379 - val_loss: 4.625964035709461
+2021-09-19 16:55:06,065 - INFO - Found best model !! Validation loss descreased from 4.649582292862281 to 4.625964035709461
+2021-09-19 16:59:02,240 - INFO - Iterations: 91     - epoch: 1   - train_loss: 3.97020800113678 - val_loss: 4.253870122268529
+2021-09-19 16:59:02,241 - INFO - Found best model !! Validation loss descreased from 4.625964035709461 to 4.253870122268529
+2021-09-19 17:02:51,186 - INFO - Iterations: 101    - epoch: 1   - train_loss: 3.878503346443176 - val_loss: 4.1405261001901
+2021-09-19 17:02:51,188 - INFO - Found best model !! Validation loss descreased from 4.253870122268529 to 4.1405261001901
+2021-09-19 17:03:01,155 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00101.pth
+2021-09-19 17:06:50,370 - INFO - Iterations: 111    - epoch: 1   - train_loss: 3.8320107221603394 - val_loss: 4.0108269080073535
+2021-09-19 17:06:50,372 - INFO - Found best model !! Validation loss descreased from 4.1405261001901 to 4.0108269080073535
+2021-09-19 17:10:46,806 - INFO - Iterations: 121    - epoch: 1   - train_loss: 4.174428558349609 - val_loss: 3.9954146452828083
+2021-09-19 17:10:46,807 - INFO - Found best model !! Validation loss descreased from 4.0108269080073535 to 3.9954146452828083
+2021-09-19 17:14:39,445 - INFO - Iterations: 131    - epoch: 1   - train_loss: 3.466660475730896 - val_loss: 4.266355414411978
+2021-09-19 17:18:21,886 - INFO - Iterations: 141    - epoch: 1   - train_loss: 4.081445050239563 - val_loss: 4.021392133510755
+2021-09-19 17:22:05,251 - INFO - Iterations: 151    - epoch: 1   - train_loss: 3.8674761772155763 - val_loss: 3.995345618375047
+2021-09-19 17:22:05,259 - INFO - Found best model !! Validation loss descreased from 3.9954146452828083 to 3.995345618375047
+2021-09-19 17:25:55,651 - INFO - Iterations: 161    - epoch: 1   - train_loss: 3.4305517196655275 - val_loss: 4.0929561860547095
+2021-09-19 17:29:38,666 - INFO - Iterations: 171    - epoch: 1   - train_loss: 3.7299022674560547 - val_loss: 4.328645918005241
+2021-09-19 17:33:20,865 - INFO - Iterations: 181    - epoch: 1   - train_loss: 4.082276320457458 - val_loss: 4.015123923292417
+2021-09-19 17:37:03,673 - INFO - Iterations: 191    - epoch: 1   - train_loss: 3.7240206956863404 - val_loss: 3.850383529227651
+2021-09-19 17:37:03,674 - INFO - Found best model !! Validation loss descreased from 3.995345618375047 to 3.850383529227651
+2021-09-19 17:40:54,469 - INFO - Iterations: 201    - epoch: 1   - train_loss: 3.6954905509948732 - val_loss: 4.091649236882518
+2021-09-19 17:40:54,470 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00201.pth
+2021-09-19 17:44:44,263 - INFO - Iterations: 211    - epoch: 1   - train_loss: 2.9626853227615357 - val_loss: 3.7050466917142897
+2021-09-19 17:44:44,264 - INFO - Found best model !! Validation loss descreased from 3.850383529227651 to 3.7050466917142897
+2021-09-19 17:48:35,761 - INFO - Iterations: 221    - epoch: 1   - train_loss: 3.5042834520339965 - val_loss: 3.508284403981563
+2021-09-19 17:48:35,762 - INFO - Found best model !! Validation loss descreased from 3.7050466917142897 to 3.508284403981563
+2021-09-19 17:52:26,339 - INFO - Iterations: 231    - epoch: 1   - train_loss: 3.489199328422546 - val_loss: 4.461020221833341
+2021-09-19 17:56:07,821 - INFO - Iterations: 241    - epoch: 1   - train_loss: 3.274734306335449 - val_loss: 3.5547136400274173
+2021-09-19 17:59:49,813 - INFO - Iterations: 251    - epoch: 1   - train_loss: 3.318202805519104 - val_loss: 3.376072706576593
+2021-09-19 17:59:49,814 - INFO - Found best model !! Validation loss descreased from 3.508284403981563 to 3.376072706576593
+2021-09-19 18:03:36,151 - INFO - Iterations: 261    - epoch: 1   - train_loss: 3.4466893792152407 - val_loss: 3.3999383661472153
+2021-09-19 18:07:18,360 - INFO - Iterations: 271    - epoch: 1   - train_loss: 2.7815181255340575 - val_loss: 3.379238868634144
+2021-09-19 18:10:52,549 - INFO - Iterations: 281    - epoch: 1   - train_loss: 3.4252600193023683 - val_loss: 3.425655069866937
+2021-09-19 18:14:37,206 - INFO - Iterations: 291    - epoch: 1   - train_loss: 3.52261164188385 - val_loss: 3.52684659323471
+2021-09-19 18:18:15,449 - INFO - Iterations: 301    - epoch: 1   - train_loss: 2.9914386510849 - val_loss: 3.248446317043847
+2021-09-19 18:18:15,570 - INFO - Found best model !! Validation loss descreased from 3.376072706576593 to 3.248446317043847
+2021-09-19 18:18:26,870 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00301.pth
+2021-09-19 18:22:15,046 - INFO - Iterations: 311    - epoch: 1   - train_loss: 2.4967242002487184 - val_loss: 3.4994764211559723
+2021-09-19 18:25:55,496 - INFO - Iterations: 321    - epoch: 1   - train_loss: 3.3033045291900636 - val_loss: 3.809881343679157
+2021-09-19 18:29:38,366 - INFO - Iterations: 331    - epoch: 1   - train_loss: 2.6917574763298036 - val_loss: 3.136188604696068
+2021-09-19 18:29:38,367 - INFO - Found best model !! Validation loss descreased from 3.248446317043847 to 3.136188604696068
+2021-09-19 18:33:29,886 - INFO - Iterations: 341    - epoch: 1   - train_loss: 3.290983200073242 - val_loss: 3.0757512178071247
+2021-09-19 18:33:29,887 - INFO - Found best model !! Validation loss descreased from 3.136188604696068 to 3.0757512178071247
+2021-09-19 18:37:19,905 - INFO - Iterations: 351    - epoch: 1   - train_loss: 2.777423918247223 - val_loss: 3.3212821384568416
+2021-09-19 18:40:55,081 - INFO - Iterations: 361    - epoch: 1   - train_loss: 2.559356081485748 - val_loss: 2.9802375395676335
+2021-09-19 18:40:55,082 - INFO - Found best model !! Validation loss descreased from 3.0757512178071247 to 2.9802375395676335
+2021-09-19 18:44:44,590 - INFO - Iterations: 371    - epoch: 1   - train_loss: 2.226918268203735 - val_loss: 3.147037165116764
+2021-09-19 18:48:14,883 - INFO - Iterations: 381    - epoch: 1   - train_loss: 2.7037534952163695 - val_loss: 3.343663966517427
+2021-09-19 18:51:44,037 - INFO - Iterations: 391    - epoch: 1   - train_loss: 2.4317558884620665 - val_loss: 3.042149285802584
+2021-09-19 18:55:13,231 - INFO - Iterations: 401    - epoch: 1   - train_loss: 2.8747447609901426 - val_loss: 3.4977207661656564
+2021-09-19 18:55:13,337 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00401.pth
+2021-09-19 18:58:51,977 - INFO - Iterations: 411    - epoch: 1   - train_loss: 2.810510349273682 - val_loss: 3.5305493672986232
+2021-09-19 19:02:22,899 - INFO - Iterations: 421    - epoch: 1   - train_loss: 4.757159566879272 - val_loss: 3.3020212120504793
+2021-09-19 19:05:51,370 - INFO - Iterations: 431    - epoch: 1   - train_loss: 2.859120774269104 - val_loss: 3.074869014233529
+2021-09-19 19:09:25,133 - INFO - Iterations: 441    - epoch: 1   - train_loss: 2.287591743469238 - val_loss: 3.2910958735640357
+2021-09-19 19:13:01,219 - INFO - Iterations: 451    - epoch: 1   - train_loss: 2.642030358314514 - val_loss: 3.0082001587610225
+2021-09-19 19:16:30,297 - INFO - Iterations: 461    - epoch: 1   - train_loss: 3.4587598562240602 - val_loss: 2.97755637809545
+2021-09-19 19:16:30,298 - INFO - Found best model !! Validation loss descreased from 2.9802375395676335 to 2.97755637809545
+2021-09-19 19:20:09,924 - INFO - Iterations: 471    - epoch: 1   - train_loss: 2.3796569228172304 - val_loss: 2.988561366288783
+2021-09-19 19:23:40,697 - INFO - Iterations: 481    - epoch: 1   - train_loss: 3.091382586956024 - val_loss: 3.1073571454934372
+2021-09-19 19:27:12,677 - INFO - Iterations: 491    - epoch: 1   - train_loss: 2.449938154220581 - val_loss: 2.9301325008496195
+2021-09-19 19:27:12,678 - INFO - Found best model !! Validation loss descreased from 2.97755637809545 to 2.9301325008496195
+2021-09-19 19:30:51,785 - INFO - Iterations: 501    - epoch: 1   - train_loss: 2.7998161554336547 - val_loss: 2.9209964782847258
+2021-09-19 19:30:51,786 - INFO - Found best model !! Validation loss descreased from 2.9301325008496195 to 2.9209964782847258
+2021-09-19 19:31:01,269 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00501.pth
+2021-09-19 19:34:45,538 - INFO - Iterations: 511    - epoch: 1   - train_loss: 3.61289439201355 - val_loss: 3.9483269110188157
+2021-09-19 19:38:19,992 - INFO - Iterations: 521    - epoch: 1   - train_loss: 3.634863543510437 - val_loss: 3.636026680134906
+2021-09-19 19:41:55,915 - INFO - Iterations: 531    - epoch: 1   - train_loss: 2.821202802658081 - val_loss: 3.250093795704895
+2021-09-19 19:45:35,192 - INFO - Iterations: 541    - epoch: 1   - train_loss: 2.1471404075622558 - val_loss: 3.31668818911571
+2021-09-19 19:49:13,543 - INFO - Iterations: 551    - epoch: 1   - train_loss: 3.316678512096405 - val_loss: 3.127681705364567
+2021-09-19 19:52:49,011 - INFO - Iterations: 561    - epoch: 1   - train_loss: 2.8925790071487425 - val_loss: 2.7979659677488717
+2021-09-19 19:52:49,121 - INFO - Found best model !! Validation loss descreased from 2.9209964782847258 to 2.7979659677488717
+2021-09-19 19:56:35,368 - INFO - Iterations: 571    - epoch: 1   - train_loss: 1.5594089150428772 - val_loss: 3.066795760687597
+2021-09-19 20:00:14,146 - INFO - Iterations: 581    - epoch: 1   - train_loss: 2.277620756626129 - val_loss: 3.2500042952151
+2021-09-19 20:03:51,248 - INFO - Iterations: 591    - epoch: 1   - train_loss: 2.937386965751648 - val_loss: 2.7778093801465578
+2021-09-19 20:03:51,249 - INFO - Found best model !! Validation loss descreased from 2.7979659677488717 to 2.7778093801465578
+2021-09-19 20:07:35,000 - INFO - Iterations: 601    - epoch: 1   - train_loss: 2.612092101573944 - val_loss: 2.7388331612270926
+2021-09-19 20:07:35,122 - INFO - Found best model !! Validation loss descreased from 2.7778093801465578 to 2.7388331612270926
+2021-09-19 20:07:44,897 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00601.pth
+2021-09-19 20:11:31,348 - INFO - Iterations: 611    - epoch: 1   - train_loss: 2.0470332741737365 - val_loss: 2.7340539986055767
+2021-09-19 20:11:31,349 - INFO - Found best model !! Validation loss descreased from 2.7388331612270926 to 2.7340539986055767
+2021-09-19 20:15:16,427 - INFO - Iterations: 621    - epoch: 1   - train_loss: 2.3727940559387206 - val_loss: 3.867929163282949
+2021-09-19 20:18:58,235 - INFO - Iterations: 631    - epoch: 1   - train_loss: 2.9466205835342407 - val_loss: 3.150923090814027
+2021-09-19 20:22:27,780 - INFO - Iterations: 641    - epoch: 1   - train_loss: 2.6808576703071596 - val_loss: 3.1941679591636456
+2021-09-19 20:25:49,556 - INFO - Iterations: 651    - epoch: 1   - train_loss: 2.8878281354904174 - val_loss: 3.2362385420072934
+2021-09-19 20:29:19,093 - INFO - Iterations: 661    - epoch: 1   - train_loss: 3.1872262001037597 - val_loss: 3.000753924830588
+2021-09-19 20:32:48,679 - INFO - Iterations: 671    - epoch: 1   - train_loss: 2.621404778957367 - val_loss: 2.950440562369224
+2021-09-19 20:36:18,365 - INFO - Iterations: 681    - epoch: 1   - train_loss: 2.4590948581695558 - val_loss: 2.892109064664134
+2021-09-19 20:39:47,445 - INFO - Iterations: 691    - epoch: 1   - train_loss: 2.503383719921112 - val_loss: 2.923367750591147
+2021-09-19 20:43:17,155 - INFO - Iterations: 701    - epoch: 1   - train_loss: 2.199114966392517 - val_loss: 2.975977679937632
+2021-09-19 20:43:17,157 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00701.pth
+2021-09-19 20:46:54,820 - INFO - Iterations: 711    - epoch: 1   - train_loss: 3.012615996599197 - val_loss: 2.820068405907668
+2021-09-19 20:50:24,157 - INFO - Iterations: 721    - epoch: 1   - train_loss: 2.8718303442001343 - val_loss: 2.822097308799892
+2021-09-19 20:53:53,907 - INFO - Iterations: 731    - epoch: 1   - train_loss: 2.5170000433921813 - val_loss: 3.1783640338609853
+2021-09-19 20:57:24,069 - INFO - Iterations: 741    - epoch: 1   - train_loss: 2.889011597633362 - val_loss: 2.7083192581455866
+2021-09-19 20:57:24,069 - INFO - Found best model !! Validation loss descreased from 2.7340539986055767 to 2.7083192581455866
+2021-09-19 21:01:02,517 - INFO - Iterations: 751    - epoch: 1   - train_loss: 2.1222554326057432 - val_loss: 2.6732825169306316
+2021-09-19 21:01:02,518 - INFO - Found best model !! Validation loss descreased from 2.7083192581455866 to 2.6732825169306316
+2021-09-19 21:04:44,174 - INFO - Iterations: 761    - epoch: 1   - train_loss: 2.8015631794929505 - val_loss: 2.6788652578067635
+2021-09-19 21:08:14,187 - INFO - Iterations: 771    - epoch: 1   - train_loss: 2.6188746094703674 - val_loss: 2.786560066334323
+2021-09-19 21:11:44,007 - INFO - Iterations: 781    - epoch: 1   - train_loss: 2.790710175037384 - val_loss: 3.0902737478786957
+2021-09-19 21:15:14,122 - INFO - Iterations: 791    - epoch: 1   - train_loss: 2.665124547481537 - val_loss: 2.787468602178161
+2021-09-19 21:18:43,838 - INFO - Iterations: 801    - epoch: 1   - train_loss: 3.0146711111068725 - val_loss: 2.895668500644004
+2021-09-19 21:18:43,839 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00801.pth
+2021-09-19 21:22:26,891 - INFO - Iterations: 811    - epoch: 1   - train_loss: 3.4163709402084352 - val_loss: 2.8314853544140646
+2021-09-19 21:26:00,005 - INFO - Iterations: 821    - epoch: 1   - train_loss: 2.3147309184074403 - val_loss: 2.925746517032831
+2021-09-19 21:29:36,231 - INFO - Iterations: 831    - epoch: 1   - train_loss: 1.960442578792572 - val_loss: 3.390562382108437
+2021-09-19 21:33:09,682 - INFO - Iterations: 841    - epoch: 1   - train_loss: 2.2323410391807554 - val_loss: 3.713667409672976
+2021-09-19 21:36:47,416 - INFO - Iterations: 851    - epoch: 1   - train_loss: 2.8205408334732054 - val_loss: 3.085456385450092
+2021-09-19 21:40:17,384 - INFO - Iterations: 861    - epoch: 1   - train_loss: 3.601350450515747 - val_loss: 3.0667890298910843
+2021-09-19 21:43:46,356 - INFO - Iterations: 871    - epoch: 1   - train_loss: 2.1776361227035523 - val_loss: 2.9199591628359465
+2021-09-19 21:47:23,157 - INFO - Iterations: 881    - epoch: 1   - train_loss: 3.013622558116913 - val_loss: 3.025904723783275
+2021-09-19 21:50:55,523 - INFO - Iterations: 891    - epoch: 1   - train_loss: 2.969491422176361 - val_loss: 2.8102302522716407
+2021-09-19 21:54:29,010 - INFO - Iterations: 901    - epoch: 1   - train_loss: 2.138115572929382 - val_loss: 2.8507788499516105
+2021-09-19 21:54:29,011 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/00901.pth
+2021-09-19 21:58:15,641 - INFO - Iterations: 911    - epoch: 1   - train_loss: 3.2128448843955995 - val_loss: 2.797368018503139
+2021-09-19 22:02:29,572 - INFO - Iterations: 921    - epoch: 1   - train_loss: 1.9490548491477966 - val_loss: 2.781210866818082
+2021-09-19 22:07:04,485 - INFO - Iterations: 931    - epoch: 1   - train_loss: 1.739287221431732 - val_loss: 3.0206795063115166
+2021-09-19 22:11:46,144 - INFO - Iterations: 941    - epoch: 1   - train_loss: 2.0388362228870394 - val_loss: 2.7240156627198804
+2021-09-19 22:16:24,299 - INFO - Iterations: 951    - epoch: 1   - train_loss: 1.6268288791179657 - val_loss: 2.8711372482573645
+2021-09-19 22:19:54,180 - INFO - Iterations: 961    - epoch: 1   - train_loss: 2.5046051025390623 - val_loss: 2.700062873946157
+2021-09-19 22:23:23,715 - INFO - Iterations: 971    - epoch: 1   - train_loss: 1.628290742635727 - val_loss: 2.778509619327898
+2021-09-19 22:26:52,661 - INFO - Iterations: 981    - epoch: 1   - train_loss: 1.9745914816856385 - val_loss: 2.7185513799575096
+2021-09-19 22:30:23,021 - INFO - Iterations: 991    - epoch: 1   - train_loss: 1.8221049845218658 - val_loss: 3.01825405540179
+2021-09-19 22:33:59,682 - INFO - Iterations: 1001   - epoch: 1   - train_loss: 1.7637716233730316 - val_loss: 3.033786091641216
+2021-09-19 22:33:59,683 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01001.pth
+2021-09-19 22:37:45,728 - INFO - Iterations: 1011   - epoch: 1   - train_loss: 2.576981234550476 - val_loss: 2.8415649925877235
+2021-09-19 22:41:23,575 - INFO - Iterations: 1021   - epoch: 1   - train_loss: 2.925358200073242 - val_loss: 2.656442235731436
+2021-09-19 22:41:23,577 - INFO - Found best model !! Validation loss descreased from 2.6732825169306316 to 2.656442235731436
+2021-09-19 22:45:19,866 - INFO - Iterations: 1031   - epoch: 1   - train_loss: 2.119138765335083 - val_loss: 2.7760927812558807
+2021-09-19 22:49:13,033 - INFO - Iterations: 1041   - epoch: 1   - train_loss: 2.866547405719757 - val_loss: 2.6626471031769485
+2021-09-19 22:52:46,957 - INFO - Iterations: 1051   - epoch: 1   - train_loss: 2.226177430152893 - val_loss: 2.502645700266529
+2021-09-19 22:52:46,958 - INFO - Found best model !! Validation loss descreased from 2.656442235731436 to 2.502645700266529
+2021-09-19 22:57:40,597 - INFO - Iterations: 1061   - epoch: 1   - train_loss: 2.057057332992554 - val_loss: 2.402634970464571
+2021-09-19 22:57:40,781 - INFO - Found best model !! Validation loss descreased from 2.502645700266529 to 2.402634970464571
+2021-09-19 23:02:38,597 - INFO - Iterations: 1071   - epoch: 1   - train_loss: 1.5965661227703094 - val_loss: 2.6536625394051123
+2021-09-19 23:06:18,697 - INFO - Iterations: 1081   - epoch: 1   - train_loss: 2.352976751327515 - val_loss: 2.472720363517543
+2021-09-19 23:09:49,283 - INFO - Iterations: 1091   - epoch: 1   - train_loss: 2.153149402141571 - val_loss: 2.525267354017514
+2021-09-19 23:13:20,065 - INFO - Iterations: 1101   - epoch: 1   - train_loss: 1.7708278357982636 - val_loss: 2.4661314737297104
+2021-09-19 23:13:20,066 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01101.pth
+2021-09-19 23:17:31,475 - INFO - Iterations: 1111   - epoch: 1   - train_loss: 2.222056746482849 - val_loss: 2.4472074915102855
+2021-09-19 23:21:03,745 - INFO - Iterations: 1121   - epoch: 1   - train_loss: 1.6436003565788269 - val_loss: 2.5333982994947246
+2021-09-19 23:24:33,623 - INFO - Iterations: 1131   - epoch: 1   - train_loss: 2.8905240893363953 - val_loss: 2.464597800545796
+2021-09-19 23:28:11,765 - INFO - Iterations: 1141   - epoch: 1   - train_loss: 2.60866322517395 - val_loss: 2.7957248087459337
+2021-09-19 23:31:51,141 - INFO - Iterations: 1151   - epoch: 1   - train_loss: 2.2177353858947755 - val_loss: 2.520506891650622
+2021-09-19 23:35:26,597 - INFO - Iterations: 1161   - epoch: 1   - train_loss: 2.3789559841156005 - val_loss: 2.879975545147579
+2021-09-19 23:39:07,715 - INFO - Iterations: 1171   - epoch: 1   - train_loss: 2.1414061725139617 - val_loss: 2.829503220600818
+2021-09-19 23:42:33,863 - INFO - Iterations: 1181   - epoch: 1   - train_loss: 1.9732351660728455 - val_loss: 2.545680871277958
+2021-09-19 23:45:59,169 - INFO - Iterations: 1191   - epoch: 1   - train_loss: 2.3105982899665833 - val_loss: 2.637804601296872
+2021-09-19 23:49:24,452 - INFO - Iterations: 1201   - epoch: 1   - train_loss: 2.145015996694565 - val_loss: 2.750043462170009
+2021-09-19 23:49:24,453 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01201.pth
+2021-09-19 23:53:01,659 - INFO - Iterations: 1211   - epoch: 1   - train_loss: 1.7651643335819245 - val_loss: 2.5724794044644534
+2021-09-19 23:56:37,790 - INFO - Iterations: 1221   - epoch: 1   - train_loss: 2.444642353057861 - val_loss: 2.7154849237946426
+2021-09-20 00:00:15,237 - INFO - Iterations: 1231   - epoch: 1   - train_loss: 2.052050697803497 - val_loss: 2.6261385843090848
+2021-09-20 00:03:48,222 - INFO - Iterations: 1241   - epoch: 1   - train_loss: 3.468712842464447 - val_loss: 2.585834035995656
+2021-09-20 00:07:23,260 - INFO - Iterations: 1251   - epoch: 1   - train_loss: 2.3697991013526916 - val_loss: 2.4130301808124175
+2021-09-20 00:10:55,185 - INFO - Iterations: 1261   - epoch: 1   - train_loss: 1.8706492841243745 - val_loss: 2.501851315526459
+2021-09-20 00:14:27,227 - INFO - Iterations: 1271   - epoch: 1   - train_loss: 2.0041958689689636 - val_loss: 2.4595560492936546
+2021-09-20 00:18:01,449 - INFO - Iterations: 1281   - epoch: 1   - train_loss: 2.137422835826874 - val_loss: 2.433105639901436
+2021-09-20 00:21:36,797 - INFO - Iterations: 1291   - epoch: 1   - train_loss: 1.6375627040863037 - val_loss: 2.6734866996234405
+2021-09-20 00:25:09,352 - INFO - Iterations: 1301   - epoch: 1   - train_loss: 1.6663441687822342 - val_loss: 2.6115060280673874
+2021-09-20 00:25:09,353 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01301.pth
+2021-09-20 00:28:49,388 - INFO - Iterations: 1311   - epoch: 1   - train_loss: 1.9513348877429961 - val_loss: 2.58272113850686
+2021-09-20 00:32:22,872 - INFO - Iterations: 1321   - epoch: 1   - train_loss: 2.242506241798401 - val_loss: 2.488737545149055
+2021-09-20 00:36:00,806 - INFO - Iterations: 1331   - epoch: 1   - train_loss: 1.6981681525707244 - val_loss: 2.561827506011207
+2021-09-20 00:39:38,611 - INFO - Iterations: 1341   - epoch: 1   - train_loss: 2.1889753937721252 - val_loss: 2.4920824640569927
+2021-09-20 00:43:12,629 - INFO - Iterations: 1351   - epoch: 1   - train_loss: 2.0859132409095764 - val_loss: 2.460743337546191
+2021-09-20 00:46:42,641 - INFO - Iterations: 1361   - epoch: 1   - train_loss: 2.0038987159729005 - val_loss: 2.429117048939991
+2021-09-20 00:50:15,860 - INFO - Iterations: 1371   - epoch: 1   - train_loss: 2.589599585533142 - val_loss: 2.5350402090029265
+2021-09-20 00:53:50,228 - INFO - Iterations: 1381   - epoch: 1   - train_loss: 1.737311178445816 - val_loss: 2.3469663958516933
+2021-09-20 00:53:50,229 - INFO - Found best model !! Validation loss descreased from 2.402634970464571 to 2.3469663958516933
+2021-09-20 00:57:43,800 - INFO - Iterations: 1391   - epoch: 1   - train_loss: 1.4536144971847533 - val_loss: 2.4743191547201064
+2021-09-20 01:01:34,279 - INFO - Iterations: 1401   - epoch: 1   - train_loss: 2.4947072565555573 - val_loss: 2.5780199625624154
+2021-09-20 01:01:34,280 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01401.pth
+2021-09-20 01:05:42,454 - INFO - Iterations: 1411   - epoch: 1   - train_loss: 2.6752262353897094 - val_loss: 2.5337174967779013
+2021-09-20 01:09:45,226 - INFO - Iterations: 1421   - epoch: 1   - train_loss: 2.613535726070404 - val_loss: 2.6852001964845167
+2021-09-20 01:13:15,913 - INFO - Iterations: 1431   - epoch: 1   - train_loss: 2.434312403202057 - val_loss: 2.598726131311969
+2021-09-20 01:16:46,319 - INFO - Iterations: 1441   - epoch: 1   - train_loss: 2.2970659494400025 - val_loss: 2.4171495886441474
+2021-09-20 01:20:16,458 - INFO - Iterations: 1451   - epoch: 1   - train_loss: 1.7682599782943726 - val_loss: 2.482355218626068
+2021-09-20 01:23:47,433 - INFO - Iterations: 1461   - epoch: 1   - train_loss: 1.6187087416648864 - val_loss: 2.5708186154527044
+2021-09-20 01:27:16,871 - INFO - Iterations: 1471   - epoch: 1   - train_loss: 1.588068625330925 - val_loss: 2.496506574178884
+2021-09-20 01:30:46,534 - INFO - Iterations: 1481   - epoch: 1   - train_loss: 1.3029068768024445 - val_loss: 2.723269742528746
+2021-09-20 01:34:17,920 - INFO - Iterations: 1491   - epoch: 1   - train_loss: 2.062677416205406 - val_loss: 2.768659265209993
+2021-09-20 01:37:57,991 - INFO - Iterations: 1501   - epoch: 1   - train_loss: 2.3367857694625855 - val_loss: 2.7233889431965923
+2021-09-20 01:37:57,993 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01501.pth
+2021-09-20 01:41:43,747 - INFO - Iterations: 1511   - epoch: 1   - train_loss: 1.6960714280605316 - val_loss: 2.7800598534013696
+2021-09-20 01:45:11,815 - INFO - Iterations: 1521   - epoch: 1   - train_loss: 1.777191662788391 - val_loss: 2.8337967140198557
+2021-09-20 01:48:38,182 - INFO - Iterations: 1531   - epoch: 1   - train_loss: 2.228580367565155 - val_loss: 2.5152279851612396
+2021-09-20 01:52:04,392 - INFO - Iterations: 1541   - epoch: 1   - train_loss: 2.1466105818748473 - val_loss: 2.392378578932878
+2021-09-20 01:55:29,028 - INFO - Iterations: 1551   - epoch: 1   - train_loss: 1.9765694200992585 - val_loss: 2.3777444862654646
+2021-09-20 01:58:54,145 - INFO - Iterations: 1561   - epoch: 1   - train_loss: 1.6041226714849472 - val_loss: 2.4142814138513837
+2021-09-20 02:02:19,584 - INFO - Iterations: 1571   - epoch: 1   - train_loss: 1.1941810250282288 - val_loss: 2.5090831379869027
+2021-09-20 02:05:44,286 - INFO - Iterations: 1581   - epoch: 1   - train_loss: 2.0538980960845947 - val_loss: 2.432083697119605
+2021-09-20 02:09:08,565 - INFO - Iterations: 1591   - epoch: 1   - train_loss: 1.7095207691192627 - val_loss: 2.396457440069246
+2021-09-20 02:12:32,786 - INFO - Iterations: 1601   - epoch: 1   - train_loss: 2.2965484142303465 - val_loss: 2.465225232062404
+2021-09-20 02:12:32,787 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01601.pth
+2021-09-20 02:16:08,641 - INFO - Iterations: 1611   - epoch: 1   - train_loss: 1.3651707112789153 - val_loss: 2.7228325248757255
+2021-09-20 02:19:33,903 - INFO - Iterations: 1621   - epoch: 1   - train_loss: 2.383984017372131 - val_loss: 2.505986336484819
+2021-09-20 02:23:10,159 - INFO - Iterations: 1631   - epoch: 1   - train_loss: 2.1463851273059844 - val_loss: 2.295690589656908
+2021-09-20 02:23:10,160 - INFO - Found best model !! Validation loss descreased from 2.3469663958516933 to 2.295690589656908
+2021-09-20 02:26:56,930 - INFO - Iterations: 1641   - epoch: 1   - train_loss: 2.3929497480392454 - val_loss: 2.4175811310014326
+2021-09-20 02:30:36,261 - INFO - Iterations: 1651   - epoch: 1   - train_loss: 2.1455790758132935 - val_loss: 2.304978864535154
+2021-09-20 02:34:18,611 - INFO - Iterations: 1661   - epoch: 1   - train_loss: 2.3334996461868287 - val_loss: 2.2573293080096115
+2021-09-20 02:34:18,612 - INFO - Found best model !! Validation loss descreased from 2.295690589656908 to 2.2573293080096115
+2021-09-20 02:37:59,813 - INFO - Iterations: 1671   - epoch: 1   - train_loss: 2.0968240976333616 - val_loss: 2.2954378686064554
+2021-09-20 02:41:27,228 - INFO - Iterations: 1681   - epoch: 1   - train_loss: 2.3184064507484434 - val_loss: 2.237732842943804
+2021-09-20 02:41:27,228 - INFO - Found best model !! Validation loss descreased from 2.2573293080096115 to 2.237732842943804
+2021-09-20 02:45:10,340 - INFO - Iterations: 1691   - epoch: 1   - train_loss: 1.7342784643173217 - val_loss: 2.4740321697990693
+2021-09-20 02:48:52,360 - INFO - Iterations: 1701   - epoch: 1   - train_loss: 1.2889839738607407 - val_loss: 2.5596688863246917
+2021-09-20 02:48:52,361 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01701.pth
+2021-09-20 02:52:42,874 - INFO - Iterations: 1711   - epoch: 1   - train_loss: 1.4088203579187393 - val_loss: 2.64509443166069
+2021-09-20 02:56:19,809 - INFO - Iterations: 1721   - epoch: 1   - train_loss: 2.631740963459015 - val_loss: 2.325127107453739
+2021-09-20 02:59:55,065 - INFO - Iterations: 1731   - epoch: 1   - train_loss: 2.2724954038858414 - val_loss: 2.2992293206573335
+2021-09-20 03:03:36,371 - INFO - Iterations: 1741   - epoch: 1   - train_loss: 1.9886336952447892 - val_loss: 2.2069556723142454
+2021-09-20 03:03:36,371 - INFO - Found best model !! Validation loss descreased from 2.237732842943804 to 2.2069556723142454
+2021-09-20 03:07:26,482 - INFO - Iterations: 1751   - epoch: 1   - train_loss: 1.4264394134283065 - val_loss: 2.3341933010023332
+2021-09-20 03:11:10,409 - INFO - Iterations: 1761   - epoch: 1   - train_loss: 2.04992413520813 - val_loss: 2.233554176696225
+2021-09-20 03:14:51,723 - INFO - Iterations: 1771   - epoch: 1   - train_loss: 2.500455045700073 - val_loss: 2.282049376394845
+2021-09-20 03:18:34,631 - INFO - Iterations: 1781   - epoch: 1   - train_loss: 1.7395973324775695 - val_loss: 2.5093904456826386
+2021-09-20 03:22:25,305 - INFO - Iterations: 1791   - epoch: 1   - train_loss: 1.5301080703735352 - val_loss: 2.365412210560443
+2021-09-20 03:26:27,069 - INFO - Iterations: 1801   - epoch: 1   - train_loss: 1.1504099816083908 - val_loss: 2.3859762201186068
+2021-09-20 03:26:27,070 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01801.pth
+2021-09-20 03:30:37,842 - INFO - Iterations: 1811   - epoch: 1   - train_loss: 1.591512030363083 - val_loss: 2.5361948062939024
+2021-09-20 03:34:34,045 - INFO - Iterations: 1821   - epoch: 1   - train_loss: 2.2926119804382323 - val_loss: 2.5222454107517076
+2021-09-20 03:38:36,990 - INFO - Iterations: 1831   - epoch: 1   - train_loss: 2.370649552345276 - val_loss: 2.4508949233564787
+2021-09-20 03:42:24,812 - INFO - Iterations: 1841   - epoch: 1   - train_loss: 2.1200652182102204 - val_loss: 2.2999920476852598
+2021-09-20 03:46:08,412 - INFO - Iterations: 1851   - epoch: 1   - train_loss: 1.659158170223236 - val_loss: 2.1890743355863465
+2021-09-20 03:46:08,413 - INFO - Found best model !! Validation loss descreased from 2.2069556723142454 to 2.1890743355863465
+2021-09-20 03:50:04,207 - INFO - Iterations: 1861   - epoch: 1   - train_loss: 2.0921229481697083 - val_loss: 2.2012021041302354
+2021-09-20 03:53:48,199 - INFO - Iterations: 1871   - epoch: 1   - train_loss: 1.4701686263084413 - val_loss: 2.2413850095691883
+2021-09-20 03:57:38,254 - INFO - Iterations: 1881   - epoch: 1   - train_loss: 1.8005932509899139 - val_loss: 2.2842181226361298
+2021-09-20 04:01:24,005 - INFO - Iterations: 1891   - epoch: 1   - train_loss: 1.1756599426269532 - val_loss: 2.2930362388759318
+2021-09-20 04:05:13,553 - INFO - Iterations: 1901   - epoch: 1   - train_loss: 1.9154112815856934 - val_loss: 2.5436395021869305
+2021-09-20 04:05:13,554 - INFO - Saving model to runs/train/layoutlmv2-base-uncased_2e/01901.pth
+2021-09-20 04:09:09,490 - INFO - Iterations: 1911   - epoch: 1   - train_loss: 1.4974242836236953 - val_loss: 2.428375505167478
+2021-09-20 04:12:54,223 - INFO - Iterations: 1921   - epoch: 1   - train_loss: 1.9927608788013458 - val_loss: 2.2922335838575565
+2021-09-20 04:16:42,220 - INFO - Iterations: 1931   - epoch: 1   - train_loss: 1.068745642900467 - val_loss: 2.3071928093221015
+2021-09-20 04:20:28,371 - INFO - Iterations: 1941   - epoch: 1   - train_loss: 1.8388612508773803 - val_loss: 2.2322173323036134
+2021-09-20 04:24:14,252 - INFO - Iterations: 1951   - epoch: 1   - train_loss: 1.9916742205619813 - val_loss: 2.199657876713726
+2021-09-20 04:28:02,939 - INFO - Iterations: 1961   - epoch: 1   - train_loss: 1.2558918431401254 - val_loss: 2.2401758981868625
+2021-09-20 04:31:36,544 - INFO - Iterations: 1971   - epoch: 1   - train_loss: 1.3988645300269127 - val_loss: 2.449169203343461
+2021-09-20 04:35:09,268 - INFO - Iterations: 1981   - epoch: 1   - train_loss: 1.8569726705551148 - val_loss: 2.4390959586323557

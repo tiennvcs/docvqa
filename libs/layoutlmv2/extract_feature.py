@@ -2,7 +2,7 @@
     Usages:
         python extract_feature.py \
             --input_dir /mlcv/Databases/DocVQA_2020-21/task_1/val/ \
-            --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/val \
+            --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/layoutlmv2/val \
             --batch_size 16 
 """
 
@@ -44,13 +44,13 @@ def extract_from_dir(data_dir, output_dir, batch_size):
     dataset_with_ocr = dataset.map(get_avail_ocr_feature, batched=True, batch_size=batch_size)
     print("Encoding entire data set ...")
     encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
-					remove_columns=dataset_with_ocr.column_names, features=features)    
-    output_file = os.path.join(output_dir, 'extracted_features' + '.pt')
-    print("Saving extracted feature to {} ...".format(output_file))
-    torch.save(encoded_dataset, output_file)
+					remove_columns=dataset_with_ocr.column_names, features=features)
+    print("Saving extracted feature to {} ...".format(output_dir))
+    # torch.save(encoded_dataset, output_file)
+    encoded_dataset.save_to_disk(output_dir)
 
     # Check save successfull or not
-    dataloader = load_feature_from_file(path=output_file ,batch_size=2, num_workers=2)
+    dataloader = load_feature_from_file(path=output_dir, batch_size=2, num_workers=2)
     print(dataloader)
     print("Successfully !")
 

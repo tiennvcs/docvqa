@@ -12,7 +12,6 @@ from config import TRAIN_FEATURE_PATH, VAL_FEATURE_PATH, MODEL_CHECKPOINT, TRAIN
 import numpy as np
 import torch
 import os
-from torch.nn.parallel import DistributedDataParallel
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
@@ -32,7 +31,7 @@ def train(model, train_data, val_data,
     if torch.cuda.device_count() > 1:
         logger.info("Let's use {} GPUs!".format(torch.cuda.device_count()))
         model = nn.DataParallel(model).cuda()
-    model.to(device)
+    model = model.to(device)
 
     gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
     logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
@@ -56,18 +55,6 @@ def train(model, train_data, val_data,
             image             = train_batch["image"].to(device)
             start_positions   = train_batch["start_positions"].to(device)
             end_positions     = train_batch["end_positions"].to(device)
-
-            # DEBUG for multi-gpus training
-            # print("Model device: {}".format(model.device))
-            # print("Weights device: {}".format(next(model.parameters()).device))
-            # print("input_ids device: {}".format(input_ids.device))
-            # print("attention_mask device: {}".format(attention_mask.device))
-            # print("token_type_ids device: {}".format(token_type_ids.device))
-            # print("bbox device: {}".format(bbox.device))
-            # print("image device: {}".format(image.device))
-            # print("start_positions device: {}".format(start_positions.device))
-            # print("end_positions device: {}".format(end_positions.device))
-            #input()
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -135,18 +122,8 @@ def train(model, train_data, val_data,
 def main(args):
 
     gpu_ids = [i for i in range(torch.cuda.device_count())]
-    #rank = 2 * len(gpu_ids) + gpu_ids[0]
-    #world_size = len(gpu_ids)*2
-    #os.environ['MASTER_ADDR'] = '10.57.23.164'              #
-    #os.environ['MASTER_PORT'] = '8888' 
     torch.cuda.set_device(gpu_ids[0])
     
-    #torch.distributed.init_process_group(backend='nccl',                                         
-    #		init_method='env://',                                   
-    #	world_size=world_size,                              
-    #	rank=rank
-    #)
-
     if not os.path.exists(args['work_dir']):
         os.mkdir(args['work_dir'])
     # Create logger
