@@ -11,6 +11,7 @@ from config import MODEL_CHECKPOINT, features, DEBUG, BATCH_SIZE
 import cv2
 import numpy as np
 from datasets import Dataset
+import torch.distributed as dist
 tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT)
 feature_extractor = LayoutLMv2FeatureExtractor()
 
@@ -277,3 +278,27 @@ def get_gpu_memory_map():
     # Convert lines into a dictionary
     gpu_memory = [int(x) for x in result.strip().split('\n')]
     return np.array(gpu_memory)
+
+def init_process(rank, size, backend='gloo'):
+    """ Initialize the distributed environment. """
+    os.environ['MASTER_ADDR'] = '127.0.0.1'
+    os.environ['MASTER_PORT'] = '12345'
+    dist.init_process_group(backend, rank=rank, world_size=size)
+
+
+def find_highest_score_answer(start_scores, end_scores):
+    start_indices = []
+    end_indices   = []
+    for start_idx, end_idx in zip(start_scores, end_scores):
+        
+        highest_start  = np.argmax(start_idx)
+        highest_end    = np.argmax(end_idx)
+        
+        # Find the subarray that pick the highest total score for which end >= start.
+        if highest_start < highest_end:
+            highest_start  = np.argmax(start_idx)
+            highest_end    = np.argmax(end_idx) 
+        start_indices.append(highest_start)
+        end_indices.append(highest_end)
+
+    return (start_indices, end_indices)

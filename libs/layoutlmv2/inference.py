@@ -1,7 +1,8 @@
 import torch
 import argparse
 import os
-from utils import load_feature_from_file, create_logger
+import numpy as np
+from utils import find_highest_score_answer, load_feature_from_file, create_logger
 from transformers import AutoModelForQuestionAnswering
 from transformers import AutoTokenizer
 
@@ -23,16 +24,19 @@ def inference(model, data, tokenizer, output_dir):
         
         outputs = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids,
                     bbox=bbox, image=image, start_positions=start_positions, end_positions=end_positions)
-        start_logits = outputs.start_logits
-        end_logits   = outputs.end_logits
-        start_pos    = torch.argmax(start_logits)
-        end_pos      = torch.argmax(end_logits)
-
-        print(start_pos)
-        print(end_pos)
-
+        start_logits = outputs.start_logits.detach().cpu().numpy()
+        end_logits   = outputs.end_logits.detach().cpu().numpy()
+        start_indices, end_indices = find_highest_score_answer(
+                                    start_scores=start_logits, end_scores=end_logits)
+        print(start_indices, end_indices)
+        input_ids    = input_ids.cpu().numpy()
+        for input_id, s, e in zip(input_ids, start_indices, end_indices):
+            predicted_answer = tokenizer.decode(input_id[s:e+1])
+            decoding_string  = tokenizer.decode(input_id)
+            question         = decoding_string[decoding_string.find('[CLS]')+5:decoding_string.find('[SEP]')]
+            print("Question: {}".format(question))
+            print("Answer: {}".format(predicted_answer))
         input()
-        
 
 
 def main(args):
@@ -50,7 +54,7 @@ def main(args):
 
     # Load dataset
     logger.info("Loading dataset from {} ...".format(args['input_dir']))
-    eval_data = load_feature_from_file(path=args['input_dir'])
+    eval_data = load_feature_from_file(path=args['input_dir'], batch_size=2)
     logger.info("The number of sample is {} ...".format(len(eval_data.dataset)))
 
     # Load model
@@ -59,7 +63,7 @@ def main(args):
     model.load_state_dict(torch.load(args['weights'], map_location='cuda'))
     
     # Load tokenizer
-    tokenizer = AutoTokenizer.from_pretrained('microsoft/layoutlmv2-base-uncased')
+    tokenizer = AutoTokenizer.from_pretrained(args['model'])
 
     # Inference
     logger.info("Start inference ...")
