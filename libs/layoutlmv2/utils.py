@@ -302,3 +302,12 @@ def find_highest_score_answer(start_scores, end_scores):
         end_indices.append(highest_end)
 
     return (start_indices, end_indices)
+
+
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
+    dist.init_process_group("gloo", rank=rank, world_size=world_size)
+
+def cleanup():
+    dist.destroy_process_group()

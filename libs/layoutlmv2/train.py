@@ -5,38 +5,37 @@
 """
 
 import argparse
+from torch import distributed as dist
 from transformers import AutoModelForQuestionAnswering
 import torch.nn as nn
-from utils import create_logger, get_gpu_memory_map, load_feature_from_file, init_process
+from utils import create_logger, get_gpu_memory_map, load_feature_from_file, setup, cleanup
 from config import TRAIN_FEATURE_PATH, VAL_FEATURE_PATH, MODEL_CHECKPOINT, TRAINING_CONFIGs
 import numpy as np
 import torch
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+from torch.nn.parallel import DistributedDataParallel as DDP
+import torch.multiprocessing as mp
 
 
+def train(rank, model, train_data, val_data, world_size,
+        epochs, optimizer, lr, save_freq,
+        eval_freq, work_dir):
 
-def train(model, train_data, val_data, 
-        epochs, optimizer, lr, loss_log, save_freq,
-        eval_freq, work_dir, logger, gpu_ids):
 
+    device = rank
+    print("Running DDP with model parallel example on cuda:{} device".format(rank))
+    # logger.info("Running DDP with model parallel example on cuda:{} device".format(rank))
 
-    optimizer = optimizer(model.parameters(), lr=lr)
-
-    # Measure GPU memory of model
-    device = torch.device("cuda", gpu_ids[0]) if gpu_ids is not None else torch.device("cpu")
-    
+    setup(rank, world_size)
     GPU_usage_before = get_gpu_memory_map()
-
-    if torch.cuda.device_count() > 1:
-        logger.info("Let's use {} GPUs!".format(torch.cuda.device_count()))
-        #model.layoutlmv2.visual.synchronize_batch_norm()
-        model = nn.DataParallel(model)
-
-    model = model.to(device)
-
+    model = model.to(rank)
+    model = DDP(model, device_ids=[rank], find_unused_parameters=True)
     gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
-    logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
+    print("GPUs usages for model: {} Mb".format(gpus_usage))
+    # logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
+    
+    optimizer = optimizer(model.parameters(), lr=lr)
 
     model.train()
 
@@ -45,7 +44,9 @@ def train(model, train_data, val_data,
 
     for epoch in range(1, epochs):
 
-        logger.info("Epoch {}/{}".format(epoch, epochs))
+        print("Epoch {}/{}".format(epoch, epochs))
+        
+        # logger.info("Epoch {}/{}".format(epoch, epochs))
         
         train_loss = 0.0
         for _, train_batch in enumerate(train_data):
@@ -95,19 +96,25 @@ def train(model, train_data, val_data,
                     # Calculate Loss
                     val_loss += loss.item()
                 
-                logger.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
-                loss_log.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
+                print("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
+                print("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
+
+                # logger.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
+                # loss_log.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
 
                     
                 if min_valid_loss > val_loss/len(val_data):
-                    logger.info("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss/len(val_data)))
+                    print("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss/len(val_data)))
+                    # logger.info("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss/len(val_data)))
                     torch.save(model.state_dict(), os.path.join(work_dir, 'best'+'.pth'))
                     min_valid_loss = val_loss/len(val_data)
 
                 # Save model each save_freq iteration
                 if idx % save_freq == 1:
-                    logger.info("Saving model to {}".format(os.path.join(work_dir, str(idx).zfill(5)+'.pth')))
+                    print("Saving model to {}".format(os.path.join(work_dir, str(idx).zfill(5)+'.pth')))
+                    # logger.info("Saving model to {}".format(os.path.join(work_dir, str(idx).zfill(5)+'.pth')))
                     torch.save(model.state_dict(), os.path.join(work_dir, str(idx).zfill(5)+'.pth'))
+                    dist.barrier()
 
                 # Reset training loss
                 train_loss = 0.0
@@ -115,8 +122,12 @@ def train(model, train_data, val_data,
             idx += 1
 
 
-    logger.info("Done !")
-    logger.info("The minimum on validation {}".format(min_valid_loss))
+    # logger.info("Done !")
+    # logger.info("The minimum on validation {}".format(min_valid_loss))
+    print("DONE !")
+    print("The minimum on validation {}".format(min_valid_loss))
+
+    cleanup()
 
     return model
 
@@ -161,15 +172,19 @@ def main(args):
         len(train_dataloader.dataset), len(val_dataloader.dataset)))
 
     logger.info("Loading pre-training model from {} checkpoint".format(MODEL_CHECKPOINT))
-    #torch.distributed.init_process_group(backend='nccl', init_method='tcp://127.0.01:23456', rank=0, world_size=2)
     model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT)
     
 	# Fine-tuning model
-    trained_model = train(model=model, train_data=train_dataloader, val_data=val_dataloader,
-						epochs=epochs, optimizer=optimizer, lr=lr, loss_log=loss_log, save_freq=save_freq,
-                        work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq, gpu_ids=gpu_ids)
+    # trained_model = train(model=model, train_data=train_dataloader, val_data=val_dataloader,
+	# 					epochs=epochs, optimizer=optimizer, lr=lr, loss_log=loss_log, save_freq=save_freq,
+    #                     work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq, gpu_ids=gpu_ids)
 
-	
+    mp.spawn(train,
+             args=(model, train_dataloader, val_dataloader, len(gpu_ids), 
+                   epochs, optimizer, lr, save_freq,
+                   eval_freq, args['work_dir']),
+             nprocs=len(gpu_ids),
+             join=True)
 
 
 if __name__ == '__main__':
