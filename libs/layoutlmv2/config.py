@@ -3,7 +3,7 @@ from datasets import Features, Sequence, Value, Array2D, Array3D
 from torch.optim import AdamW, SGD, Adam
 
 
-ROOT_DIR           = '/mlcv/Databases/DocVQA_2020-21/task_3/'
+ROOT_DIR           = '/mlcv/Databases/DocVQA_2020-21/task_1/'
 TRAIN_DIR          = os.path.join(ROOT_DIR, 'train/')
 VAL_DIR            = os.path.join(ROOT_DIR, 'val/')
 try:
@@ -14,9 +14,10 @@ except:
     print("DON'T WORRY !")
 MODEL_CHECKPOINT   = 'microsoft/layoutlmv2-base-uncased'
 BATCH_SIZE         = 16          # Change if want extract feature with your own batch size
-DEBUG              = 1000
+DEBUG              = 100
 
 features           = Features({
+                        'question_id': Value(dtype='int64'),
                         'input_ids': Sequence(feature=Value(dtype='int64')),
                         'bbox': Array2D(dtype="int64", shape=(512, 4)),
                         'attention_mask': Sequence(Value(dtype='int64')),

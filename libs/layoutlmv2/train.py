@@ -30,7 +30,7 @@ def train(model, train_data, val_data,
 
     if torch.cuda.device_count() > 1:
         logger.info("Let's use {} GPUs!".format(torch.cuda.device_count()))
-        model.layoutlmv2.visual.synchronize_batch_norm()
+        #model.layoutlmv2.visual.synchronize_batch_norm()
         model = nn.DataParallel(model)
 
     model = model.to(device)
@@ -160,10 +160,8 @@ def main(args):
     logger.info("Training size: {} - Validation size: {}".format(
         len(train_dataloader.dataset), len(val_dataloader.dataset)))
 
-	# Create model for fine-tuning
-    #init_process(0, 2)
     logger.info("Loading pre-training model from {} checkpoint".format(MODEL_CHECKPOINT))
-    torch.distributed.init_process_group(backend='nccl', init_method='tcp://127.0.01:23456', rank=0, world_size=2)
+    #torch.distributed.init_process_group(backend='nccl', init_method='tcp://127.0.01:23456', rank=0, world_size=2)
     model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT)
     
 	# Fine-tuning model

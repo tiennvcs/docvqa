@@ -1,8 +1,8 @@
 """
     Usages:
         python extract_feature.py \
-            --input_dir /mlcv/Databases/DocVQA_2020-21/task_3/val/ \
-            --output_dir /mlcv/Databases/DocVQA_2020-21/task_3/extracted_features/layoutlmv2/val \
+            --input_dir /mlcv/Databases/DocVQA_2020-21/task_1/val/ \
+            --output_dir /mlcv/Databases/DocVQA_2020-21/task_1/extracted_features/layoutlmv2/val \
             --batch_size 16 
 """
 

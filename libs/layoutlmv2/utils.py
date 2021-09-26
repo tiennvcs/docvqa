@@ -187,7 +187,8 @@ def encode_dataset(examples, max_length=512):
     encoding['image'] = examples['image']
     encoding['start_positions'] = start_positions
     encoding['end_positions'] = end_positions
-
+    encoding['question_id'] = examples['questionId']
+    
     return encoding
 
 
@@ -279,6 +280,7 @@ def get_gpu_memory_map():
     gpu_memory = [int(x) for x in result.strip().split('\n')]
     return np.array(gpu_memory)
 
+
 def init_process(rank, size, backend='gloo'):
     """ Initialize the distributed environment. """
     os.environ['MASTER_ADDR'] = '127.0.0.1'
@@ -290,10 +292,8 @@ def find_highest_score_answer(start_scores, end_scores):
     start_indices = []
     end_indices   = []
     for start_idx, end_idx in zip(start_scores, end_scores):
-        
         highest_start  = np.argmax(start_idx)
         highest_end    = np.argmax(end_idx)
-        
         # Find the subarray that pick the highest total score for which end >= start.
         if highest_start < highest_end:
             highest_start  = np.argmax(start_idx)

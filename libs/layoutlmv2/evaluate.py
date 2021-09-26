@@ -1,0 +1,1 @@
+/mlcv/Databases/DocVQA_2020-21/task_3/Task_3_evaluation_script/Task_3/evaluate.py
