@@ -35,8 +35,8 @@ TRAINING_CONFIGs   = {
                                             'epochs': 2,
                                             'batch_size': 2,
                                             'momentum': 0.9,
-                                            'eval_freq': 1,       # Evaluate model each 100 iterations
-                                            'save_freq': 1,       # Save checkpoint each 500 iterations, it must be divisible for eval_freq
+                                            'eval_freq': 10,       # Evaluate model each 100 iterations
+                                            'save_freq': 500,       # Save checkpoint each 500 iterations, it must be divisible for eval_freq
                                             'num_workers': 4,
                                     },                
 }
