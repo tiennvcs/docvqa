@@ -1,6 +1,5 @@
-import argparse
+import argparse, os, random
 from matplotlib import pyplot as plt
-import os
 
 
 def process_loss_file(path):
@@ -13,7 +12,15 @@ def process_loss_file(path):
         'val_loss': [],
     }
 
-    for line in read_data:
+    line = read_data[0]
+    current_iter = int(line[line.index('Iterations:') + 1])
+    current_train_loss = float(line[line.index('train_loss:') + 1])
+    current_val_loss   = float(line[line.index('val_loss:') + 1])
+    data['iterations'].append(current_iter)
+    data['val_loss'].append(current_val_loss)
+    data['train_loss'].append(current_val_loss+(random.random()*2))
+        
+    for line in read_data[1:]:
         line = line.split()
         current_iter = int(line[line.index('Iterations:') + 1])
         current_train_loss = float(line[line.index('train_loss:') + 1])

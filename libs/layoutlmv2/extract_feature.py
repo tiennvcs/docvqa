@@ -77,8 +77,3 @@ if __name__ == '__main__':
     print("Extracting feature ...")
     extract_from_dir(data_dir=args['input_dir'], 
                     output_dir=args['output_dir'], batch_size=args['batch_size'])
-    
-    # Test extract successful
-    # dataloader = load_feature_from_file(path=os.path.join(args['output_dir'], 'extracted_feature.pt'), 
-    #                             batch_size=1, num_workers=2)
-    # print(dataloader)

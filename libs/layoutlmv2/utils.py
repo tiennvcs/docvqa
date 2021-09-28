@@ -7,12 +7,13 @@ import pandas as pd
 from datasets import Dataset
 from transformers import AutoTokenizer
 from transformers import LayoutLMv2FeatureExtractor
-from config import MODEL_CHECKPOINT, features, DEBUG, BATCH_SIZE
+from config import BASE_MODEL_CHECKPOINT, LARGE_MODEL_CHECKPOINT, features, DEBUG, BATCH_SIZE
 import cv2
 import numpy as np
 from datasets import Dataset
 import torch.distributed as dist
-tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT)
+
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT)
 feature_extractor = LayoutLMv2FeatureExtractor()
 
 
@@ -141,8 +142,8 @@ def encode_dataset(examples, max_length=512):
     encoding = tokenizer(questions, words, boxes, max_length=max_length, padding="max_length", truncation=True)
 
     # next, add start_positions and end_positions
-    start_positions = [0]*BATCH_SIZE
-    end_positions = [0]*BATCH_SIZE
+    start_positions = [-1]*BATCH_SIZE
+    end_positions = [-1]*BATCH_SIZE
     answers = examples['answers']
     # for every example in the batch:
     for batch_index in range(len(answers)):
@@ -176,13 +177,13 @@ def encode_dataset(examples, max_length=512):
 
             for id in word_ids[::-1]:
                 if id == word_idx_end:
-                    end_positions[batch_index] = token_end_index
+                    end_positions[batch_index]   = token_end_index
                     break
                 else:
                     token_end_index -= 1
         else:
             start_positions[batch_index] = cls_index
-            end_positions[batch_index]   = cls_index
+            end_positions[batch_index] = cls_index
 
     encoding['image'] = examples['image']
     encoding['start_positions'] = start_positions

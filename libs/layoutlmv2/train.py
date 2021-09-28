@@ -5,37 +5,30 @@
 """
 
 import argparse
-from torch import distributed as dist
 from transformers import AutoModelForQuestionAnswering
 import torch.nn as nn
-from utils import create_logger, get_gpu_memory_map, load_feature_from_file, setup, cleanup
-from config import TRAIN_FEATURE_PATH, VAL_FEATURE_PATH, MODEL_CHECKPOINT, TRAINING_CONFIGs
+from utils import create_logger, get_gpu_memory_map, load_feature_from_file
+from config import TRAINING_CONFIGs
 import numpy as np
 import torch
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-from torch.nn.parallel import DistributedDataParallel as DDP
-import torch.multiprocessing as mp
 
 
-def train(rank, model, train_data, val_data, world_size,
+def train(model, train_data, val_data,
         epochs, optimizer, lr, save_freq,
-        eval_freq, work_dir):
+        eval_freq, work_dir, loss_log, logger, gpu_ids):
 
 
-    device = rank
-    print("Running DDP with model parallel example on cuda:{} device".format(rank))
-    # logger.info("Running DDP with model parallel example on cuda:{} device".format(rank))
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    setup(rank, world_size)
     GPU_usage_before = get_gpu_memory_map()
-    model = model.to(rank)
-    model = DDP(model, device_ids=[rank], find_unused_parameters=True)
+
+    if torch.cuda.device_count() > 1:
+        model = model = nn.DataParallel(model, devices=gpu_ids)
+    model.to(device)
     gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
-    print("GPUs usages for model: {} Mb".format(gpus_usage))
-    # logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
-    
-    optimizer = optimizer(model.parameters(), lr=lr)
+    logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
 
     model.train()
 
@@ -43,10 +36,8 @@ def train(rank, model, train_data, val_data, world_size,
     idx = 1
 
     for epoch in range(1, epochs):
-
-        print("Epoch {}/{}".format(epoch, epochs))
         
-        # logger.info("Epoch {}/{}".format(epoch, epochs))
+        logger.info("Epoch {}/{}".format(epoch, epochs))
         
         train_loss = 0.0
         for _, train_batch in enumerate(train_data):
@@ -81,7 +72,6 @@ def train(rank, model, train_data, val_data, world_size,
                 model.eval()
                 for _, val_batch in enumerate(val_data):
                     
-                    # val_batch               = val_batch.to(device)
                     input_ids               = val_batch["input_ids"].to(device)
                     attention_mask          = val_batch["attention_mask"].to(device)
                     token_type_ids          = val_batch["token_type_ids"].to(device)
@@ -95,25 +85,19 @@ def train(rank, model, train_data, val_data, world_size,
                     loss = outputs.loss
                     # Calculate Loss
                     val_loss += loss.item()
-                
-                print("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
-                print("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
-
-                # logger.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
-                # loss_log.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
+            
+                logger.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
+                loss_log.info("Iterations: {:<6} - epoch: {:<3} - train_loss: {:<6} - val_loss: {:<6}".format(idx, epoch, train_loss/eval_freq, val_loss/len(val_data)))
                     
                 if min_valid_loss > val_loss/len(val_data):
-                    print("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss/len(val_data)))
-                    # logger.info("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss/len(val_data)))
+                    logger.info("Found best model !! Validation loss descreased from {} to {}".format(min_valid_loss, val_loss/len(val_data)))
                     torch.save(model.state_dict(), os.path.join(work_dir, 'best'+'.pth'))
                     min_valid_loss = val_loss/len(val_data)
 
                 # Save model each save_freq iteration
                 if idx % save_freq == 1:
-                    print("Saving model to {}".format(os.path.join(work_dir, str(idx).zfill(5)+'.pth')))
-                    # logger.info("Saving model to {}".format(os.path.join(work_dir, str(idx).zfill(5)+'.pth')))
+                    logger.info("Saving model to {}".format(os.path.join(work_dir, str(idx).zfill(5)+'.pth')))
                     torch.save(model.state_dict(), os.path.join(work_dir, str(idx).zfill(5)+'.pth'))
-                    dist.barrier()
 
                 # Reset training loss
                 train_loss = 0.0
@@ -121,12 +105,8 @@ def train(rank, model, train_data, val_data, world_size,
             idx += 1
 
 
-    # logger.info("Done !")
-    # logger.info("The minimum on validation {}".format(min_valid_loss))
-    print("DONE !")
-    print("The minimum on validation {}".format(min_valid_loss))
-
-    cleanup()
+    logger.info("Done !")
+    logger.info("The minimum on validation {}".format(min_valid_loss))
 
     return model
 
@@ -144,53 +124,49 @@ def main(args):
 
     logger.info('Loading training configuration ...')
     config = TRAINING_CONFIGs[args['train_config']]
-    optimizer, momentum, lr, epochs, batch_size,\
-         eval_freq, save_freq, num_workers = config['optimizer'], config['momentum'], \
-        config['lr'], config['epochs'], \
+    optimizer, lr, epochs, batch_size,\
+         eval_freq, save_freq, num_workers = config['optimizer'], config['lr'], config['epochs'], \
         config['batch_size'], config['eval_freq'], config['save_freq'], config['num_workers']
     logger.info("Configuration: {}".format(config))
 
     # Check whether feature path file existing or not
-    if not os.path.exists(TRAIN_FEATURE_PATH):
+    if not os.path.exists(config['TRAIN_FEATURE_PATH']):
         logger.error("Invalid training feature path")
         exit(0)
-    if not os.path.exists(VAL_FEATURE_PATH):
+    if not os.path.exists(config['VAL_FEATURE_PATH']):
         logger.error("Invalid validation feature path")
         exit(0)
 
 	# Load data into program 
-    logger.info("Loading training dataset from {} ...".format(TRAIN_FEATURE_PATH))
-    train_dataloader = load_feature_from_file(path=TRAIN_FEATURE_PATH, 
+    logger.info("Loading training dataset from {} ...".format(config['TRAIN_FEATURE_PATH']))
+    train_dataloader = load_feature_from_file(path=config['TRAIN_FEATURE_PATH'], 
                                             batch_size=batch_size, num_workers=num_workers)
 
-    logger.info("Loading validation dataset from {} ...".format(VAL_FEATURE_PATH))
-    val_dataloader = load_feature_from_file(path=VAL_FEATURE_PATH, 
+    logger.info("Loading validation dataset from {} ...".format(config['VAL_FEATURE_PATH']))
+    val_dataloader = load_feature_from_file(path=config['VAL_FEATURE_PATH'], 
                                             batch_size=batch_size, num_workers=num_workers)
 
     logger.info("Training size: {} - Validation size: {}".format(
         len(train_dataloader.dataset), len(val_dataloader.dataset)))
 
-    logger.info("Loading pre-training model from {} checkpoint".format(MODEL_CHECKPOINT))
-    model = AutoModelForQuestionAnswering.from_pretrained(MODEL_CHECKPOINT)
-    
-	# Fine-tuning model
-    # trained_model = train(model=model, train_data=train_dataloader, val_data=val_dataloader,
-	# 					epochs=epochs, optimizer=optimizer, lr=lr, loss_log=loss_log, save_freq=save_freq,
-    #                     work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq, gpu_ids=gpu_ids)
+    logger.info("Loading pre-training model from {} checkpoint".format(config['model']))
+    model = AutoModelForQuestionAnswering.from_pretrained(config['model'])
+    if 'momentum' in config.keys():
+        optimizer = optimizer(model.parameter(), lr=lr, momentum=momentum)
+    else:
+        optimizer = optimizer(model.parameter(), lr=lr)
 
-    mp.spawn(train,
-             args=(model, train_dataloader, val_dataloader, len(gpu_ids), 
-                   epochs, optimizer, lr, save_freq,
-                   eval_freq, args['work_dir']),
-             nprocs=len(gpu_ids),
-             join=True)
+	# Fine-tuning model
+    train(model=model, train_data=train_dataloader, val_data=val_dataloader,
+        epochs=epochs, optimizer=optimizer, loss_log=loss_log, save_freq=save_freq,
+        work_dir=args['work_dir'], logger=logger, eval_freq=eval_freq, gpu_ids=gpu_ids)
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Fine tuning pre-training model on DocVQA data')
 
-    parser.add_argument('--work_dir', default='runs/train/train_1/',
+    parser.add_argument('--work_dir', default='runs/train/docvqa/baseline/',
         help='The directory store model checkpoint and log file',
     )
 
