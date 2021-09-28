@@ -210,7 +210,6 @@ def load_and_process_data(data_dir, batch_size, num_workers):
     with open(label_file, 'r') as f:
         data = json.load(f)
     df = pd.DataFrame(data['data'])
-    # df = df.sort_values('image')
     df['image'] = [os.path.join(data_dir, img_file) for img_file in df['image']]
 
     # Check availabel OCR file
@@ -235,9 +234,7 @@ def load_and_process_data(data_dir, batch_size, num_workers):
     return dataloader
 
 
-
 def load_feature_from_file(path, batch_size=2, num_workers=4):
-    # encoded_dataset = torch.load(path, map_location=torch.device('cuda:0' if torch.cuda.is_available() else "cpu"))
     dataset = Dataset.load_from_disk(path)
     dataset.set_format(type="torch")
     dataloader = torch.utils.data.DataLoader(dataset, shuffle=True, pin_memory=True,
@@ -264,20 +261,11 @@ def create_logger(file_path):
 
 
 def get_gpu_memory_map():
-    """Get the current gpu usage.
-
-    Returns
-    -------
-    usage: dict
-        Keys are device ids as integers.
-        Values are memory usage as integers in MB.
-    """
     result = subprocess.check_output(
         [
             'nvidia-smi', '--query-gpu=memory.used',
             '--format=csv,nounits,noheader'
         ], encoding='utf-8')
-    # Convert lines into a dictionary
     gpu_memory = [int(x) for x in result.strip().split('\n')]
     return np.array(gpu_memory)
 
@@ -309,6 +297,7 @@ def setup(rank, world_size):
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
     dist.init_process_group("gloo", rank=rank, world_size=world_size)
+
 
 def cleanup():
     dist.destroy_process_group()

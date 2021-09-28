@@ -25,7 +25,20 @@ features           = Features({
 TRAINING_CONFIGs   = {
     'docvqa_base_adam': {
         'TRAIN_FEATURE_PATH': os.path.join(DOCVQA_ROOT_DIR, 'extracted_features/layoutlmv2/train/'),
-        'TRAIN_FEATURE_PATH': os.path.join(DOCVQA_ROOT_DIR, 'extracted_features/layoutlmv2/val/'),
+        'VAL_FEATURE_PATH': os.path.join(DOCVQA_ROOT_DIR, 'extracted_features/layoutlmv2/val/'),
+        'MODEL'             : BASE_MODEL_CHECKPOINT,
+        'optimizer'         : Adam,
+        'lr'                : 1e-4,
+        'epochs'            : 2,
+        'batch_size'        : 2,
+        'eval_freq'         : 100,
+        'save_freq'         : 10000,
+        'num_workers'       : 4,
+    },
+
+    'infovqa_base_adam': {
+        'TRAIN_FEATURE_PATH': os.path.join(INFOVQA_ROOT_DIR, 'extracted_features/layoutlmv2/train/'),
+        'VAL_FEATURE_PATH': os.path.join(INFOVQA_ROOT_DIR, 'extracted_features/layoutlmv2/val/'),
         'MODEL'             : BASE_MODEL_CHECKPOINT,
         'optimizer'         : Adam,
         'lr'                : 1e-4,

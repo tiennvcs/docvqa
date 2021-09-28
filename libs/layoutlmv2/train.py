@@ -16,8 +16,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 def train(model, train_data, val_data,
-        epochs, optimizer, lr, save_freq,
-        eval_freq, work_dir, loss_log, logger, gpu_ids):
+        epochs, optimizer, save_freq, eval_freq, 
+        work_dir, loss_log, logger, gpu_ids):
 
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -25,7 +25,7 @@ def train(model, train_data, val_data,
     GPU_usage_before = get_gpu_memory_map()
 
     if torch.cuda.device_count() > 1:
-        model = model = nn.DataParallel(model, devices=gpu_ids)
+        model = model = nn.DataParallel(model)
     model.to(device)
     gpus_usage = np.sum(get_gpu_memory_map() - GPU_usage_before)
     logger.info("GPUs usages for model: {} Mb".format(gpus_usage))
@@ -149,12 +149,12 @@ def main(args):
     logger.info("Training size: {} - Validation size: {}".format(
         len(train_dataloader.dataset), len(val_dataloader.dataset)))
 
-    logger.info("Loading pre-training model from {} checkpoint".format(config['model']))
-    model = AutoModelForQuestionAnswering.from_pretrained(config['model'])
+    logger.info("Loading pre-training model from {} checkpoint".format(config['MODEL']))
+    model = AutoModelForQuestionAnswering.from_pretrained(config['MODEL'])
     if 'momentum' in config.keys():
-        optimizer = optimizer(model.parameter(), lr=lr, momentum=momentum)
+        optimizer = optimizer(model.parameters(), lr=lr, momentum=config['momentum'])
     else:
-        optimizer = optimizer(model.parameter(), lr=lr)
+        optimizer = optimizer(model.parameters(), lr=lr)
 
 	# Fine-tuning model
     train(model=model, train_data=train_dataloader, val_data=val_dataloader,
