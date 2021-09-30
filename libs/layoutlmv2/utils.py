@@ -285,8 +285,7 @@ def find_highest_score_answer(start_scores, end_scores):
         highest_end    = np.argmax(end_idx)
         # Find the subarray that pick the highest total score for which end >= start.
         if highest_start < highest_end:
-            highest_start  = np.argmax(start_idx)
-            highest_end    = np.argmax(end_idx) 
+            highest_end = highest_start + 1 
         start_indices.append(highest_start)
         end_indices.append(highest_end)
 

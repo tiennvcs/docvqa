@@ -1,6 +1,6 @@
 import os
 from datasets import Features, Sequence, Value, Array2D, Array3D
-from torch.optim import Adam
+from torch.optim import Adam, SGD
 
 
 DOCVQA_ROOT_DIR           = '/mlcv/Databases/DocVQA_2020-21/task_1/'
@@ -23,13 +23,14 @@ features           = Features({
 
 
 TRAINING_CONFIGs   = {
-    'docvqa_base_adam': {
+    'docvqa_base_sgd': {
         'TRAIN_FEATURE_PATH': os.path.join(DOCVQA_ROOT_DIR, 'extracted_features/layoutlmv2/train/'),
         'VAL_FEATURE_PATH': os.path.join(DOCVQA_ROOT_DIR, 'extracted_features/layoutlmv2/val/'),
         'MODEL'             : BASE_MODEL_CHECKPOINT,
-        'optimizer'         : Adam,
+        'optimizer'         : SGD,
         'lr'                : 1e-4,
-        'epochs'            : 2,
+        'momentum'          : 0.9,
+        'epochs'            : 10,
         'batch_size'        : 2,
         'eval_freq'         : 100,
         'save_freq'         : 10000,
@@ -42,12 +43,40 @@ TRAINING_CONFIGs   = {
         'MODEL'             : BASE_MODEL_CHECKPOINT,
         'optimizer'         : Adam,
         'lr'                : 1e-4,
-        'epochs'            : 2,
+        'epochs'            : 10,
         'batch_size'        : 2,
         'eval_freq'         : 100,
         'save_freq'         : 10000,
         'num_workers'       : 4,
-    },                
+    },
+
+    'infovqa_base_sgd': {
+        'TRAIN_FEATURE_PATH': os.path.join(INFOVQA_ROOT_DIR, 'extracted_features/layoutlmv2/train/'),
+        'VAL_FEATURE_PATH': os.path.join(INFOVQA_ROOT_DIR, 'extracted_features/layoutlmv2/val/'),
+        'MODEL'             : BASE_MODEL_CHECKPOINT,
+        'optimizer'         : SGD,
+        'lr'                : 1e-4,
+        'momentum'          : 0.9,
+        'epochs'            : 10,
+        'batch_size'        : 2,
+        'eval_freq'         : 100,
+        'save_freq'         : 10000,
+        'num_workers'       : 4,
+    },
+    
+    'infovqa_base_sgd_2': {
+        'TRAIN_FEATURE_PATH': os.path.join(INFOVQA_ROOT_DIR, 'extracted_features/layoutlmv2/train/'),
+        'VAL_FEATURE_PATH': os.path.join(INFOVQA_ROOT_DIR, 'extracted_features/layoutlmv2/val/'),
+        'MODEL'             : BASE_MODEL_CHECKPOINT,
+        'optimizer'         : SGD,
+        'lr'                : 2e-5,
+        'momentum'          : 0.9,
+        'epochs'            : 10,
+        'batch_size'        : 2,
+        'eval_freq'         : 100,
+        'save_freq'         : 10000,
+        'num_workers'       : 4,
+    },
 }
 
 

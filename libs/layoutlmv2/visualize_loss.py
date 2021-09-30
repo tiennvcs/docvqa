@@ -1,3 +1,4 @@
+import numpy as np
 import argparse, os, random
 from matplotlib import pyplot as plt
 
@@ -11,8 +12,9 @@ def process_loss_file(path):
         'train_loss': [],
         'val_loss': [],
     }
-
+    
     line = read_data[0]
+    line = line.split()
     current_iter = int(line[line.index('Iterations:') + 1])
     current_train_loss = float(line[line.index('train_loss:') + 1])
     current_val_loss   = float(line[line.index('val_loss:') + 1])
@@ -40,6 +42,7 @@ def visualize_loss(data, output_file, log_scale=False):
     ax.set_title('Training and validation loss')
     if log_scale:
         ax.set_yscale('log')
+    ax.set_yticks(np.arange(0, max(np.max(data['train_loss']), np.max(data['val_loss'])), 0.5))
     ax.legend(loc='best')
     plt.savefig(output_file)
 
