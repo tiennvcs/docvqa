@@ -11,8 +11,7 @@ import pandas as pd
 from utils import (encode_dataset, get_avail_ocr_feature, 
                 gather_ocr_file, load_feature_from_file)
 from datasets import Dataset
-from config import DEBUG, features
-import cv2
+from config import BATCH_SIZE, DEBUG, features
 
 
 def extract_from_dir(data_dir, output_dir, batch_size):
@@ -42,7 +41,8 @@ def extract_from_dir(data_dir, output_dir, batch_size):
         full_ocr_dir = os.path.join(data_dir, ocr_dir[0])
         df['ocr_output_file'] = gather_ocr_file(full_ocr_dir, df['image'])
     
-    dataset = Dataset.from_pandas(df.iloc[:])
+    NUM_SAMPLE = (df.shape[0] // BATCH_SIZE)*BATCH_SIZE
+    dataset = Dataset.from_pandas(df.iloc[:NUM_SAMPLE])
 
     print("Encoding entire data set ...")
     encoded_dataset = dataset.map(encode_dataset, batched=True, batch_size=batch_size,
@@ -53,7 +53,9 @@ def extract_from_dir(data_dir, output_dir, batch_size):
 
     # Check save successfull or not
     dataloader = load_feature_from_file(path=output_dir, batch_size=2, num_workers=2)
-    print(dataloader)
+    data_loader = iter(dataloader)
+    for i in range(10):
+        _ = data_loader.next()
     print("Successfully !")
 
 

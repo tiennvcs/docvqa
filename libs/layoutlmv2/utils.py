@@ -134,11 +134,11 @@ def encode_dataset(examples, max_length=512):
         bbox.append(boxes_img)
 
     questions  = examples['question']
-    encoding   = processor(images, questions, words, bbox, max_length=max_length, padding="max_length")
+    encoding   = processor(images, questions, words, bbox, max_length=max_length, padding="max_length", truncation=True)
 
     # next, add start_positions and end_positions
-    start_positions = []
-    end_positions   = []
+    start_positions = [0]*BATCH_SIZE
+    end_positions   = [0]*BATCH_SIZE
 
     answers = examples['answers']
     
@@ -169,20 +169,20 @@ def encode_dataset(examples, max_length=512):
             word_ids = encoding.word_ids(idx)[token_start_index:token_end_index+1]
             for id in word_ids:
                 if id == word_idx_start:
-                    start_positions.append(token_start_index)
+                    start_positions[idx] = token_start_index
                     break
                 else:
                     token_start_index += 1
 
             for id in word_ids[::-1]:
                 if id == word_idx_end:
-                    end_positions.append(token_end_index)
+                    end_positions[idx] = token_end_index
                     break
                 else:
                     token_end_index -= 1
         else:
-            start_positions.append(cls_index)
-            end_positions.append(cls_index)
+            start_positions[idx] = cls_index
+            end_positions[idx] = cls_index
 
 
     encoding['start_positions'] = start_positions
@@ -200,7 +200,7 @@ def encode_dataset(examples, max_length=512):
                 'construct_answer'     : processor.tokenizer.decode(encoding.input_ids[idx][start_positions[idx]:end_positions[idx]+1]),  
                 'words'                : words[idx],
             }
-            with open(os.path.join('./runs/debug/', 'extract_features', 'infovqa', str(dict_info['question_id'])+'.json'), 'w', encoding='utf-8') as f:
+            with open(os.path.join('./runs/debug/', 'extract_features', 'docvqa', str(dict_info['question_id'])+'.json'), 'w', encoding='utf-8') as f:
                 json.dump(dict_info, f, indent=4)
 
     return encoding
@@ -336,4 +336,5 @@ def examinize_sample(encoding, processor, words, boxes):
     print(boxes[0])
     print("Length of before text: {}".format(len(words[0])))
     print(words[0])
+    print("Reshape image: {}".format(encoding['image'][0].shape))
     exit(0)
