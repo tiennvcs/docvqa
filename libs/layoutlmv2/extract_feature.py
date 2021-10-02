@@ -12,6 +12,7 @@ from utils import (encode_dataset, get_avail_ocr_feature,
                 gather_ocr_file, load_feature_from_file)
 from datasets import Dataset
 from config import DEBUG, features
+import cv2
 
 
 def extract_from_dir(data_dir, output_dir, batch_size):
@@ -41,17 +42,13 @@ def extract_from_dir(data_dir, output_dir, batch_size):
         full_ocr_dir = os.path.join(data_dir, ocr_dir[0])
         df['ocr_output_file'] = gather_ocr_file(full_ocr_dir, df['image'])
     
-    # TRICKY to handle the case final batch is not enoguh number of samples :)
-    NUM_SAMPLE = (df.shape[0] // batch_size) * batch_size
-    dataset = Dataset.from_pandas(df.iloc[:NUM_SAMPLE])
+    dataset = Dataset.from_pandas(df.iloc[:])
 
-    print("Loading OCR ...")
-    dataset_with_ocr = dataset.map(get_avail_ocr_feature, batched=True, batch_size=batch_size)
     print("Encoding entire data set ...")
-    encoded_dataset = dataset_with_ocr.map(encode_dataset, batched=True, batch_size=batch_size,
-					remove_columns=dataset_with_ocr.column_names, features=features)
+    encoded_dataset = dataset.map(encode_dataset, batched=True, batch_size=batch_size,
+					  remove_columns=dataset.column_names, features=features)
+
     print("Saving extracted feature to {} ...".format(output_dir))
-    # torch.save(encoded_dataset, output_file)
     encoded_dataset.save_to_disk(output_dir)
 
     # Check save successfull or not

@@ -3,17 +3,18 @@ import os
 import json
 import subprocess
 import logging
-import pandas as pd
-from datasets import Dataset
-from transformers import AutoTokenizer
-from transformers import LayoutLMv2FeatureExtractor
-from config import BASE_MODEL_CHECKPOINT, LARGE_MODEL_CHECKPOINT, features, DEBUG, BATCH_SIZE
 import cv2
 import numpy as np
+import pandas as pd
+from datasets import Dataset
+from transformers import LayoutLMv2Processor, LayoutLMv2FeatureExtractor
+from config import BASE_MODEL_CHECKPOINT, LARGE_MODEL_CHECKPOINT, features, DEBUG, BATCH_SIZE, CHECK
 from datasets import Dataset
 import torch.distributed as dist
+from PIL import Image
 
-tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_CHECKPOINT)
+
+processor   = LayoutLMv2Processor.from_pretrained(BASE_MODEL_CHECKPOINT, revision="no_ocr")
 feature_extractor = LayoutLMv2FeatureExtractor()
 
 
@@ -22,7 +23,6 @@ def subfinder(words_list, answer_list):
     start_indices = []
     end_indices = []
     for idx, i in enumerate(range(len(words_list))):
-
         if words_list[i] == answer_list[0] and words_list[i:i + len(answer_list)] == answer_list:
             matches.append(answer_list)
             start_indices.append(idx)
@@ -41,19 +41,7 @@ def get_ocr_words_and_boxes(examples):
     # resize every image to 224x224 + apply tesseract to get words + normalized boxes
     encoded_inputs = feature_extractor(images)
 
-
     examples['image'] = encoded_inputs.pixel_values
-    ####################################################################################################
-    # DEBUG
-    # 3x224x224 -> 224x224x3 : 
-    # print(examples['image'][0].transpose(1, 2, 0).shape)
-    # print("SAVING RESIZED IMAGE TO CHECK")
-    # cv2.imwrite('./test_code/image_before_encoding.png', images[0])
-    # cv2.imwrite('./test_code/image_after_encoding.png', examples['image'][0].transpose(1, 2, 0))
-    # exit(0)
-    # DONE DEBUG 
-    ####################################################################################################
-
     examples['words'] = encoded_inputs.words
     examples['boxes'] = encoded_inputs.boxes
 
@@ -72,7 +60,7 @@ def normalize_bbox(bbox, width, height):
 def read_ocr_annotation(file_path, shape):
     words_img = []
     boxes_img = []
-    height, width = shape
+    width, height = shape
     with open(file_path, 'r') as f:
         data = json.load(f)   # data = {"status": [], "recognitionResults": []}
         try:
@@ -111,7 +99,7 @@ def read_ocr_annotation(file_path, shape):
 def get_avail_ocr_feature(examples):
     
     # get a batch of document images
-    images = [cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB) for image_file in examples['image']]
+    images  = [cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB) for image_file in examples['image']]
     org_shapes  = [img.shape[0:2] for img in images]
 
     # resize every image to 224x224 + apply tesseract to get words + normalized boxes
@@ -123,73 +111,98 @@ def get_avail_ocr_feature(examples):
     # Load ocr info
     examples['image'] = images
     examples['words'] = []
-    examples['boxes'] = []
+    examples['bbox'] = []
     # Loop through each image
     for i in range(len(examples['image'])):
         words_img, boxes_img = read_ocr_annotation(file_path=examples['ocr_output_file'][i], shape=org_shapes[i])
         examples['words'].append(words_img)
-        examples['boxes'].append(boxes_img)
+        examples['bbox'].append(boxes_img)
 
     return examples
 
 
 def encode_dataset(examples, max_length=512):
 
-    questions = examples['question']
-    words = examples['words']
-    boxes = examples['boxes']
-    
-    encoding = tokenizer(questions, words, boxes, max_length=max_length, padding="max_length", truncation=True)
+    images         = [Image.open(image_file).convert("RGB") for image_file in examples['image']]
+    org_shapes     = [img.size[0:2] for img in images]
+
+    words          = []
+    bbox           = []
+    for i in range(len(images)):
+        words_img, boxes_img = read_ocr_annotation(file_path=examples['ocr_output_file'][i], shape=org_shapes[i])
+        words.append(words_img)
+        bbox.append(boxes_img)
+
+    questions  = examples['question']
+    encoding   = processor(images, questions, words, bbox, max_length=max_length, padding="max_length")
 
     # next, add start_positions and end_positions
-    start_positions = [-1]*BATCH_SIZE
-    end_positions = [-1]*BATCH_SIZE
+    start_positions = []
+    end_positions   = []
+
     answers = examples['answers']
+    
     # for every example in the batch:
-    for batch_index in range(len(answers)):
-        cls_index = encoding.input_ids[batch_index].index(tokenizer.cls_token_id)
-        # try to find one of the answers in the context, return first match
-        words_example = [word.lower() for word in words[batch_index]]
-        for answer in answers[batch_index]:
+    for idx in range(len(answers)):
+        cls_index = encoding.input_ids[idx].index(processor.tokenizer.cls_token_id)
+
+        words_example = [word.lower() for word in words[idx]]
+
+        for answer in answers[idx]:
             match, word_idx_start, word_idx_end = subfinder(words_example, answer.lower().split())
             if match != None:
                 break
     
-        if match:
-            sequence_ids = encoding.sequence_ids(batch_index)
+        if match != None:
+            sequence_ids = encoding.sequence_ids(idx)
+            
             # Start token index of the current span in the text.
             token_start_index = 0
             while sequence_ids[token_start_index] != 1:
                 token_start_index += 1
 
             # End token index of the current span in the text.
-            token_end_index = len(encoding.input_ids[batch_index]) - 1
+            token_end_index = len(encoding.input_ids[idx]) - 1
             while sequence_ids[token_end_index] != 1:
                 token_end_index -= 1
-            
-            word_ids = encoding.word_ids(batch_index)[token_start_index:token_end_index+1]
+
+            word_ids = encoding.word_ids(idx)[token_start_index:token_end_index+1]
             for id in word_ids:
                 if id == word_idx_start:
-                    start_positions[batch_index] = token_start_index
+                    start_positions.append(token_start_index)
                     break
                 else:
                     token_start_index += 1
 
             for id in word_ids[::-1]:
                 if id == word_idx_end:
-                    end_positions[batch_index]   = token_end_index
+                    end_positions.append(token_end_index)
                     break
                 else:
                     token_end_index -= 1
         else:
-            start_positions[batch_index] = cls_index
-            end_positions[batch_index] = cls_index
+            start_positions.append(cls_index)
+            end_positions.append(cls_index)
 
-    encoding['image'] = examples['image']
+
     encoding['start_positions'] = start_positions
-    encoding['end_positions'] = end_positions
-    encoding['question_id'] = examples['questionId']
-    
+    encoding['end_positions']   = end_positions
+    encoding['question_id']     = examples['questionId']
+
+    # Store to debug whether feature extraction is correct or not :) 
+    if CHECK:
+        for idx in range(len(answers)):
+            dict_info = {   
+                'question_id'          : examples['questionId'][idx],
+                'image'                : os.path.basename(examples['image'][idx]),
+                'question'             : questions[idx],
+                'answer'               : answers[idx],
+                'construct_answer'     : processor.tokenizer.decode(encoding.input_ids[idx][start_positions[idx]:end_positions[idx]+1]),  
+                'words'                : words[idx],
+            }
+            with open(os.path.join('./runs/debug/', 'extract_features', 'infovqa', str(dict_info['question_id'])+'.json'), 'w', encoding='utf-8') as f:
+                json.dump(dict_info, f, indent=4)
+
     return encoding
 
 
@@ -300,3 +313,27 @@ def setup(rank, world_size):
 
 def cleanup():
     dist.destroy_process_group()
+
+
+def examinize_sample(encoding, processor, words, boxes):
+    print("Keys: {}".format(encoding.keys()))
+    # for key, value in encoding.items():
+    #     print("{} : {}".format(key, value))
+    
+    input_ids = encoding['input_ids']
+    token_type_ids = encoding['token_type_ids']
+    print("Length of input_ids: {}".format(len(input_ids[0])))
+    print(processor.tokenizer.decode(input_ids[0]))
+    print("Length of token_type_ids: {}".format(len(token_type_ids[0])))
+    print(token_type_ids[0])
+    attention_mask = encoding['attention_mask']
+    print("Length of attention_mask: {}".format(len(attention_mask[0])))
+    print(attention_mask[0])
+    atter_bbox = encoding['bbox']
+    print("Length of after bbox: {}".format(len(atter_bbox[0])))
+    print(atter_bbox[0])
+    print("Length of before bbox: {}".format(len(boxes[0])))
+    print(boxes[0])
+    print("Length of before text: {}".format(len(words[0])))
+    print(words[0])
+    exit(0)

@@ -82,3 +82,4 @@ TRAINING_CONFIGs   = {
 
 BATCH_SIZE         = 16
 DEBUG              = 1000
+CHECK              = True
